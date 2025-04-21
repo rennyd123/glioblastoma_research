@@ -1,0 +1,192 @@
+---
+format:
+  pdf: 
+    warning: false 
+    echo: false 
+---
+
+### Initial Data Summary 
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(gt)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv", col_names = TRUE)
+df <- df %>% filter(exclude == 0)
+head(df)
+```
+
+#### Gender 
+
+```{r}
+gender_df <- data.frame(table(df$gender))
+colnames(gender_df) <- c("Gender", "Count")
+gender_df %>% gt()
+```
+
+#### Diagnosis Age
+
+```{r}
+diag_age_summary <- summary(df$diagnosis_age)
+diag_age_df <- data.frame(Statistic = names(diag_age_summary),
+                          Value = as.numeric(diag_age_summary))
+diag_age_df %>% gt()
+
+ggplot(df, aes(x = diagnosis_age)) +
+  geom_density(fill = "darkblue", alpha = 0.5) +
+  labs(x = "Age", y = "Density", title = "Age Density Plot") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+#### Race
+
+```{r}
+ggplot(df, aes(x = race, fill = race)) + 
+  geom_bar(fill = "darkblue") + 
+  labs(x = "Race", y = "Count", title = "Count by Race in the Data") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
+```
+
+
+#### Vital Status
+
+```{r}
+vs_df_sum <- table(df$vital_status)
+vs_df <- data.frame(Status = names(vs_df_sum),
+                    Count = as.numeric(vs_df_sum))
+vs_df %>% gt()
+
+ggplot(df, aes(x = vital_status, fill = vital_status)) + 
+  geom_bar(fill = "darkblue") + 
+  labs(x = "Vital Status", y = "Count", title = "Count by Vital Status in the Data") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
+```
+
+#### Treatment Summary 
+
+##### Radiation Treatment 
+
+```{r}
+df$num_radiations <- factor(df$num_radiations, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+rt_df_sum <- table(df$num_radiations)
+rt_df <- data.frame(Cycles = names(rt_df_sum),
+                    Count = as.numeric(rt_df_sum))
+rt_df$Percentage <- round((rt_df$Count/sum(rt_df$Count)*100), 2)
+rt_df %>% gt()
+```
+
+##### Chemotherapy Treatment 
+
+```{r}
+df$num_chemo <- factor(df$num_chemo, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+ct_df_sum <- table(df$num_chemo)
+ct_df <- data.frame(Cycles = names(ct_df_sum),
+                    Count = as.numeric(ct_df_sum))
+ct_df$Percentage <- round((ct_df$Count/sum(ct_df$Count)*100), 2)
+ct_df %>% gt()
+```
+
+##### Stupp Protocol 
+
+```{r}
+stupp_df_sum <- table(df$received_stupp)
+stupp_df <- data.frame(Cycles = names(stupp_df_sum),
+                    Count = as.numeric(stupp_df_sum))
+stupp_df %>% gt()
+```
+
+#### Time from Surgery to Start of Radiation 
+
+```{r}
+df_surgrad <- df %>% filter(!is.na(df$time_surgery_radiation))
+surgrad_df_sum <- summary(df_surgrad$time_surgery_radiation)
+surgrad_df <- data.frame(Statistics = names(surgrad_df_sum),
+                    Value = as.numeric(surgrad_df_sum))
+surgrad_df %>% gt()
+```
+
+#### Number of Lobes Involved
+
+```{r}
+df_lobes <- df %>% filter(!is.na(df$num_lobes))
+lobes_df_sum <- table(df_lobes$num_lobes)
+lobes_df <- data.frame(Lobes = names(lobes_df_sum),
+                    Count = as.numeric(lobes_df_sum))
+lobes_df %>% gt()
+```
+
+### Initial Analysis 
+
+#### Overall Survival 
+
+This is a general picture of the overall survival of everyone in the data set. The red line represents the median value. 
+
+```{r}
+library(survival)
+
+km <- survfit(Surv(time = df$overall_survival, event = df$status) ~ 1, data = df)
+plot(km, xlab = "Time", ylab = "Survival Probability", main = "Kaplan-Meier Curve", conf.int = FALSE)
+abline(v = km$time[km$surv <= 0.5][1], col = "red", lty = 2)
+```
+
+### Significant Variables 
+
+Below are all of the individually significant variables I found in the dataset. 
+
+```{r}
+df$age_group <- cut(df$diagnosis_age,
+                    breaks = c(30, 40, 50, 60, 70, 80, 90, 100),  
+                    labels = c("30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"),  
+                    right = FALSE)
+
+sig_results <- data.frame(variable = character(), p_value = numeric())
+
+for (variable in categorical_vars) {
+  formula <- as.formula(paste("Surv(overall_survival, status == 1) ~", variable))
+  surv_diff <- survdiff(formula, data = df)
+  p <- 1 - pchisq(surv_diff$chisq, df = length(surv_diff$n) - 1)
+  
+  if (!is.na(p) && p < 0.05) {
+    sig_results <- rbind(sig_results, data.frame(variable = variable, p_value = p))
+  }
+}
+
+sig_results <- sig_results[order(sig_results$p_value), ]
+
+sig_variables <- c("num_radiations", "num_chemo", "received_stupp", "discontinued_stupps", "num_surgeries",
+                   "resection_extent", "discontinued_treatment", "caris", "MGMT_methylation", "temporal")
+sig_results <- sig_results %>% filter(variable %in% sig_variables)
+sig_results %>% gt()
+```
+
+### K-M Curves for Sig Variables 
+
+```{r}
+df$num_radiations <- factor(df$num_radiations, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+df$num_chemo <- factor(df$num_chemo, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+df$num_surgeries <- factor(df$num_surgeries, levels = c("1", "2", "≥3"))
+df$resection_extent <- factor(df$resection_extent, levels = c("Biopsy", "Resection NOS", "Subtotal Resection", "Gross Total Resection"))
+
+for (variable in sig_variables) {
+  formula <- as.formula(paste("Surv(overall_survival, status == 1) ~", variable))
+  
+  plot <- survfit2(formula, data = df) |>  
+    ggsurvfit() +
+    add_pvalue("annotation", size = 5) +
+    labs(
+      x = "Time",
+      title = paste("Survival Analysis of", variable)
+    )
+  
+  print(plot)
+}
+```
+
+### Next Steps
+
+The next steps for the analysis will be: 
+- Work on cleaning, categorising, and analysing the other mutations, increased mitotic activity values, and lobes involved.  
+- Looking at how these variables may interact and influence each other and the corresponding survival time. 
+- Meeting with my professor next week to discuss any avenues of analysis I may be missing to ensure that all of the data work is strong. 

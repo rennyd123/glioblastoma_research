@@ -1,6 +1,6 @@
 ---
 format:
-  pdf: 
+  html: 
     warning: false 
     echo: false 
 ---
@@ -14,7 +14,6 @@ library(gt)
 
 df <- read_csv("../data/cleaned_data/cleaned_data.csv", col_names = TRUE)
 df <- df %>% filter(exclude == 0)
-head(df)
 ```
 
 #### Gender 
@@ -117,6 +116,87 @@ lobes_df <- data.frame(Lobes = names(lobes_df_sum),
 lobes_df %>% gt()
 ```
 
+### Path Data
+
+#### Microvascular Proliferation
+
+```{r}
+library(rlang)
+
+summarize_variable <- function(data, var) {
+  var_sym <- ensym(var)
+  var_label <- paste0(as_label(var_sym))
+  
+  data %>%
+    filter(!is.na(!!var_sym)) %>%
+    count(!!var_sym, name = "Count") %>%
+    rename(!!var_label := !!var_sym) %>%
+    gt()
+}
+
+summarize_variable(df, microvascular_proliferation)
+```
+
+#### Necrosis
+
+```{r}
+summarize_variable(df, necrosis)
+```
+
+#### Caris?
+
+```{r}
+summarize_variable(df, caris)
+```
+
+#### EGFR Amplification
+
+```{r}
+summarize_variable(df, EGFR_amplification)
+```
+
+#### +7/-10 Chromosomal Alterations
+
+```{r}
+summarize_variable(df, chromosomal710)
+```
+
+#### TERT Promotor
+
+```{r}
+summarize_variable(df, TERT_promoter)
+```
+
+#### TERT Promotor
+
+```{r}
+summarize_variable(df, pTERT_variant)
+```
+
+#### MGMT Methylation
+
+```{r}
+summarize_variable(df, MGMT_methylation)
+```
+
+#### Ki67
+
+```{r}
+summarize_variable(df, Ki67_LI)
+```
+
+#### ATRX
+
+```{r}
+summarize_variable(df, ATRX)
+```
+
+#### Mitotic Activity
+
+```{r}
+summarize_variable(df, mitotic_activity_increase)
+```
+
 ### Initial Analysis 
 
 #### Overall Survival 
@@ -136,12 +216,26 @@ abline(v = km$time[km$surv <= 0.5][1], col = "red", lty = 2)
 Below are all of the individually significant variables I found in the dataset. 
 
 ```{r}
+library(ggsurvfit)
 df$age_group <- cut(df$diagnosis_age,
                     breaks = c(30, 40, 50, 60, 70, 80, 90, 100),  
                     labels = c("30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99"),  
                     right = FALSE)
 
 sig_results <- data.frame(variable = character(), p_value = numeric())
+
+categorical_vars <- c(
+  "gender", "race", "institution_type", "resection_extent",
+  "num_surgeries", "num_radiations", "num_chemo", "discontinued_treatment",
+  "received_stupp", "discontinued_stupps", "on_treatment_last_visit", "lobes_involved",
+  "other_brain_regions", "unique_clinical_findings", "seizures_presentation",
+  "seizures_later", "dvt_pe_presentation", "dvt_pe_during", "microvascular_proliferation",
+  "mp_early", "mp_focal", "necrosis", "chromosomal710", "EGFR_amplification",
+  "TERT_promoter", "pTERT_variant", "MGMT_methylation", "Ki67_LI", "ATRX",
+  "other_mutations", "mitotic_activity_increase", "specific_mitotic", "caris",
+  "dna_profile", "methylation_result", "lobes_clean", "frontal", "parietal",
+  "temporal", "occipital", "age_group"
+)
 
 for (variable in categorical_vars) {
   formula <- as.formula(paste("Surv(overall_survival, status == 1) ~", variable))
@@ -186,7 +280,7 @@ for (variable in sig_variables) {
 
 ### Next Steps
 
-The next steps for the analysis will be: 
-- Work on cleaning, categorising, and analysing the other mutations, increased mitotic activity values, and lobes involved.  
-- Looking at how these variables may interact and influence each other and the corresponding survival time. 
+The next steps for the analysis will be: \
+- Work on cleaning, categorising, and analysing the other mutations, increased mitotic activity values, and lobes involved. \
+- Looking at how these variables may interact and influence each other and the corresponding survival time. \
 - Meeting with my professor next week to discuss any avenues of analysis I may be missing to ensure that all of the data work is strong. 

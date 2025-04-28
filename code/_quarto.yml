@@ -17,6 +17,6 @@ website:
 
 format:
   html:
-    theme: united
+    theme: lux
     toc: true
 

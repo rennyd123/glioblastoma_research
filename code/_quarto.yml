@@ -7,12 +7,16 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Introduction
+      - href: data_summary.qmd
+        text: Data Summary
+      - href: eda.qmd
+        text: EDA
       - href: initial_pres.qmd
         text: Initial Analysis
 
 format:
   html:
-    theme: cosmo
+    theme: united
     toc: true
 

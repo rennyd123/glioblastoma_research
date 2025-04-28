@@ -1,0 +1,32 @@
+---
+format:
+  html:
+    echo: false
+    embed-resources: true
+---
+
+### Data Summary 
+
+We collected data for the last 4 months by reading patient charts and manually entering it into a spreadsheet. I cleaned the data in Python and have been running analysis in R. Below is a summary of that data.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv")
+colnames(df)
+cols_drop <- c("...1", "exclude")
+df <- df %>% dplyr::select(-all_of(cols_drop))
+```
+
+```{r}
+library(gtsummary)
+gtsummary::tbl_summary(df)
+```
+
+
+```{r}
+#library(DataExplorer)
+
+#create_report(df)
+```

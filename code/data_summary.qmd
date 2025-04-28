@@ -3,6 +3,7 @@ format:
   html:
     echo: false
     embed-resources: true
+    warning: false
 ---
 
 ### Data Summary 
@@ -14,7 +15,6 @@ library(tidyverse)
 library(dplyr)
 
 df <- read_csv("../data/cleaned_data/cleaned_data.csv")
-colnames(df)
 cols_drop <- c("...1", "exclude")
 df <- df %>% dplyr::select(-all_of(cols_drop))
 ```

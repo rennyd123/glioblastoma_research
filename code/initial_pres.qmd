@@ -96,6 +96,6 @@ for (variable in sig_variables) {
   print(plot)
 }
 
-table(df$dna_profile)
+#table(df$dna_profile)
 ```
 

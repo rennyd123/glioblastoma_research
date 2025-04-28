@@ -4682,89 +4682,21 @@ vertical-align: -.125em;
 <h3 class="anchored" data-anchor-id="data-summary">Data Summary</h3>
 <p>We collected data for the last 4 months by reading patient charts and manually entering it into a spreadsheet. I cleaned the data in Python and have been running analysis in R. Below is a summary of that data.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
-New names:
-Rows: 294 Columns: 86
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr (76): gender, race, vital_status, institution_type, resection_extent, nu...
-dbl (10): ...1, patient_id, diagnosis_age, exclude, overall_survival, time_s...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] &quot;...1&quot;                        &quot;patient_id&quot;                 
- [3] &quot;gender&quot;                      &quot;race&quot;                       
- [5] &quot;diagnosis_age&quot;               &quot;exclude&quot;                    
- [7] &quot;vital_status&quot;                &quot;institution_type&quot;           
- [9] &quot;overall_survival&quot;            &quot;resection_extent&quot;           
-[11] &quot;num_surgeries&quot;               &quot;num_radiations&quot;             
-[13] &quot;num_chemo&quot;                   &quot;discontinued_treatment&quot;     
-[15] &quot;time_surgery_radiation&quot;      &quot;received_stupp&quot;             
-[17] &quot;discontinued_stupps&quot;         &quot;time_symptoms_diagnosis&quot;    
-[19] &quot;time_symptoms_death&quot;         &quot;on_treatment_last_visit&quot;    
-[21] &quot;num_lobes&quot;                   &quot;lobes_involved&quot;             
-[23] &quot;other_brain_regions&quot;         &quot;unique_clinical_findings&quot;   
-[25] &quot;seizures_presentation&quot;       &quot;seizures_later&quot;             
-[27] &quot;dvt_pe_presentation&quot;         &quot;dvt_pe_during&quot;              
-[29] &quot;microvascular_proliferation&quot; &quot;mp_early&quot;                   
-[31] &quot;mp_focal&quot;                    &quot;necrosis&quot;                   
-[33] &quot;chromosomal710&quot;              &quot;EGFR_amplification&quot;         
-[35] &quot;TERT_promoter&quot;               &quot;pTERT_variant&quot;              
-[37] &quot;MGMT_methylation&quot;            &quot;Ki67_LI&quot;                    
-[39] &quot;ATRX&quot;                        &quot;other_mutations&quot;            
-[41] &quot;mitotic_activity_increase&quot;   &quot;specific_mitotic&quot;           
-[43] &quot;caris&quot;                       &quot;dna_profile&quot;                
-[45] &quot;methylation_result&quot;          &quot;lobes_clean&quot;                
-[47] &quot;frontal&quot;                     &quot;parietal&quot;                   
-[49] &quot;temporal&quot;                    &quot;occipital&quot;                  
-[51] &quot;other_regions_clean&quot;         &quot;left insula&quot;                
-[53] &quot;subinsular region&quot;           &quot;intra-axial&quot;                
-[55] &quot;basal ganglia&quot;               &quot;brainstem (cerebellum)&quot;     
-[57] &quot;centrum semiovale&quot;           &quot;hypothalamus&quot;               
-[59] &quot;periventricular region&quot;      &quot;pontomesencephalic junction&quot;
-[61] &quot;midbrain&quot;                    &quot;periventricular&quot;            
-[63] &quot;peri-insular&quot;                &quot;intrahemispheric&quot;           
-[65] &quot;spinal cord&quot;                 &quot;cerebellum&quot;                 
-[67] &quot;postcentral gyrus&quot;           &quot;midline&quot;                    
-[69] &quot;insula&quot;                      &quot;ganglia thalamic capsule&quot;   
-[71] &quot;hippocampus&quot;                 &quot;corpus callosum&quot;            
-[73] &quot;cerebellar peduncle&quot;         &quot;optic nerve&quot;                
-[75] &quot;falcine dural-based mass&quot;    &quot;caudate&quot;                    
-[77] &quot;intraventricular&quot;            &quot;right lateral ventricle&quot;    
-[79] &quot;pons&quot;                        &quot;optic tract&quot;                
-[81] &quot;parafalcine lesions&quot;         &quot;corona radiatia&quot;            
-[83] &quot;intraparenchyma&quot;             &quot;brainstem&quot;                  
-[85] &quot;thalamus&quot;                    &quot;status&quot;                     </code></pre>
-</div>
-</div>
-<div class="cell">
 <div class="cell-output-display">
-<div id="wazaeyrgso" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#wazaeyrgso table {
+<div id="paoyotlijw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#paoyotlijw table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#wazaeyrgso thead, #wazaeyrgso tbody, #wazaeyrgso tfoot, #wazaeyrgso tr, #wazaeyrgso td, #wazaeyrgso th {
+#paoyotlijw thead, #paoyotlijw tbody, #paoyotlijw tfoot, #paoyotlijw tr, #paoyotlijw td, #paoyotlijw th {
 border-style: none;
 }
-#wazaeyrgso p {
+#paoyotlijw p {
 margin: 0;
 padding: 0;
 }
-#wazaeyrgso .gt_table {
+#paoyotlijw .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -4789,11 +4721,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#wazaeyrgso .gt_caption {
+#paoyotlijw .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#wazaeyrgso .gt_title {
+#paoyotlijw .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -4804,7 +4736,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#wazaeyrgso .gt_subtitle {
+#paoyotlijw .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -4815,7 +4747,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#wazaeyrgso .gt_heading {
+#paoyotlijw .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -4826,12 +4758,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#wazaeyrgso .gt_bottom_border {
+#paoyotlijw .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#wazaeyrgso .gt_col_headings {
+#paoyotlijw .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -4845,7 +4777,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#wazaeyrgso .gt_col_heading {
+#paoyotlijw .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4864,7 +4796,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#wazaeyrgso .gt_column_spanner_outer {
+#paoyotlijw .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4875,13 +4807,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#wazaeyrgso .gt_column_spanner_outer:first-child {
+#paoyotlijw .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#wazaeyrgso .gt_column_spanner_outer:last-child {
+#paoyotlijw .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#wazaeyrgso .gt_column_spanner {
+#paoyotlijw .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -4892,10 +4824,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#wazaeyrgso .gt_spanner_row {
+#paoyotlijw .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#wazaeyrgso .gt_group_heading {
+#paoyotlijw .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4920,7 +4852,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#wazaeyrgso .gt_empty_group_heading {
+#paoyotlijw .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -4934,13 +4866,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#wazaeyrgso .gt_from_md > :first-child {
+#paoyotlijw .gt_from_md > :first-child {
 margin-top: 0;
 }
-#wazaeyrgso .gt_from_md > :last-child {
+#paoyotlijw .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#wazaeyrgso .gt_row {
+#paoyotlijw .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4958,7 +4890,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#wazaeyrgso .gt_stub {
+#paoyotlijw .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4970,7 +4902,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#wazaeyrgso .gt_stub_row_group {
+#paoyotlijw .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4983,13 +4915,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#wazaeyrgso .gt_row_group_first td {
+#paoyotlijw .gt_row_group_first td {
 border-top-width: 2px;
 }
-#wazaeyrgso .gt_row_group_first th {
+#paoyotlijw .gt_row_group_first th {
 border-top-width: 2px;
 }
-#wazaeyrgso .gt_summary_row {
+#paoyotlijw .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -4998,14 +4930,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#wazaeyrgso .gt_first_summary_row {
+#paoyotlijw .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#wazaeyrgso .gt_first_summary_row.thick {
+#paoyotlijw .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#wazaeyrgso .gt_last_summary_row {
+#paoyotlijw .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -5014,7 +4946,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#wazaeyrgso .gt_grand_summary_row {
+#paoyotlijw .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -5023,7 +4955,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#wazaeyrgso .gt_first_grand_summary_row {
+#paoyotlijw .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -5032,7 +4964,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#wazaeyrgso .gt_last_grand_summary_row_top {
+#paoyotlijw .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -5041,10 +4973,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#wazaeyrgso .gt_striped {
+#paoyotlijw .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#wazaeyrgso .gt_table_body {
+#paoyotlijw .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -5052,7 +4984,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#wazaeyrgso .gt_footnotes {
+#paoyotlijw .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -5065,7 +4997,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#wazaeyrgso .gt_footnote {
+#paoyotlijw .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -5073,7 +5005,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#wazaeyrgso .gt_sourcenotes {
+#paoyotlijw .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -5086,64 +5018,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#wazaeyrgso .gt_sourcenote {
+#paoyotlijw .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#wazaeyrgso .gt_left {
+#paoyotlijw .gt_left {
 text-align: left;
 }
-#wazaeyrgso .gt_center {
+#paoyotlijw .gt_center {
 text-align: center;
 }
-#wazaeyrgso .gt_right {
+#paoyotlijw .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#wazaeyrgso .gt_font_normal {
+#paoyotlijw .gt_font_normal {
 font-weight: normal;
 }
-#wazaeyrgso .gt_font_bold {
+#paoyotlijw .gt_font_bold {
 font-weight: bold;
 }
-#wazaeyrgso .gt_font_italic {
+#paoyotlijw .gt_font_italic {
 font-style: italic;
 }
-#wazaeyrgso .gt_super {
+#paoyotlijw .gt_super {
 font-size: 65%;
 }
-#wazaeyrgso .gt_footnote_marks {
+#paoyotlijw .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#wazaeyrgso .gt_asterisk {
+#paoyotlijw .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#wazaeyrgso .gt_indent_1 {
+#paoyotlijw .gt_indent_1 {
 text-indent: 5px;
 }
-#wazaeyrgso .gt_indent_2 {
+#paoyotlijw .gt_indent_2 {
 text-indent: 10px;
 }
-#wazaeyrgso .gt_indent_3 {
+#paoyotlijw .gt_indent_3 {
 text-indent: 15px;
 }
-#wazaeyrgso .gt_indent_4 {
+#paoyotlijw .gt_indent_4 {
 text-indent: 20px;
 }
-#wazaeyrgso .gt_indent_5 {
+#paoyotlijw .gt_indent_5 {
 text-indent: 25px;
 }
-#wazaeyrgso .katex-display {
+#paoyotlijw .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#wazaeyrgso div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#paoyotlijw div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>

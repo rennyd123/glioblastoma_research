@@ -99,3 +99,66 @@ for (variable in sig_variables) {
 #table(df$dna_profile)
 ```
 
+### Mitotic Activity vs Ki67 Correlation 
+
+KM Curve for the categorical parts of the mitotic activity increase. 
+
+```{r}
+# KM curve for mitotic activity 
+micat_df <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+micat_df$mitotic_activity_increase <- factor(micat_df$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
+table(micat_df$mitotic_activity_increase)
+
+micat_df_nz <- df %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
+micat_df_nz$mitotic_activity_increase <- factor(micat_df_nz$mitotic_activity_increase, levels = c("1to5", "6to10", ">10"))
+
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df_nz)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Categorical Mitotic Activity Increase KM Curve"
+    )
+```
+
+Seeing if there is trend between mitotic activity and Ki67
+
+```{r}
+micat_df$Ki67_LI <- factor(micat_df$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+micat_df_nz$Ki67_LI <- factor(micat_df_nz$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+
+fisher.test(table(micat_df$mitotic_activity_increase, micat_df$Ki67_LI))
+```
+There is a slight association between mitotic activity and Ki67. Interaction curve:
+
+```{r}
+micat_df$interaction_group <- interaction(micat_df$mitotic_activity_increase, micat_df$Ki67_LI)
+mai_ki_km <- survfit2(Surv(overall_survival, status == 1) ~ interaction_group, data = micat_df)
+ggsurvfit(mai_ki_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival Ki67 + Mitotic Activity Increase"
+    )
+
+table(micat_df$interaction_group)
+
+summary(coxph(Surv(overall_survival, status == 1) ~ interaction_group, data = micat_df))
+```
+```{r}
+median_age <- median(df$diagnosis_age)
+
+df$median_age_status <- cut(df$diagnosis_age,
+                    breaks = c(0, 66, 100),  
+                    labels = c("Below Median", "Equal to or Above Median"),  
+                    right = FALSE)
+
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ median_age_status, data = df)
+ggsurvfit(km_median_age) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival of Groups Above and Below Median Age"
+    )
+```

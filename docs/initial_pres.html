@@ -122,6 +122,10 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#initial-analysis" id="toc-initial-analysis" class="nav-link active" data-scroll-target="#initial-analysis">Initial Analysis</a></li>
   <li><a href="#significant-variables" id="toc-significant-variables" class="nav-link" data-scroll-target="#significant-variables">Significant Variables</a></li>
   <li><a href="#k-m-curves-for-sig-variables" id="toc-k-m-curves-for-sig-variables" class="nav-link" data-scroll-target="#k-m-curves-for-sig-variables">K-M Curves for Sig Variables</a></li>
+  <li><a href="#mitotic-activity-vs-ki67-correlation" id="toc-mitotic-activity-vs-ki67-correlation" class="nav-link" data-scroll-target="#mitotic-activity-vs-ki67-correlation">Mitotic Activity vs Ki67 Correlation</a></li>
+  <li><a href="#median-age-analysis" id="toc-median-age-analysis" class="nav-link" data-scroll-target="#median-age-analysis">Median Age Analysis</a></li>
+  <li><a href="#mgmt-status" id="toc-mgmt-status" class="nav-link" data-scroll-target="#mgmt-status">MGMT Status</a></li>
+  <li><a href="#initial-seizures-and-dvtpe-data" id="toc-initial-seizures-and-dvtpe-data" class="nav-link" data-scroll-target="#initial-seizures-and-dvtpe-data">Initial Seizures and DVT/PE Data</a></li>
   </ul>
 </nav>
     </div>
@@ -152,23 +156,23 @@ ul.task-list li input[type="checkbox"] {
 <p>Below are all of the individually significant variables I found in the dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="skmsytpwmx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#skmsytpwmx table {
+<div id="rzncofupbf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rzncofupbf table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#skmsytpwmx thead, #skmsytpwmx tbody, #skmsytpwmx tfoot, #skmsytpwmx tr, #skmsytpwmx td, #skmsytpwmx th {
+#rzncofupbf thead, #rzncofupbf tbody, #rzncofupbf tfoot, #rzncofupbf tr, #rzncofupbf td, #rzncofupbf th {
   border-style: none;
 }
 
-#skmsytpwmx p {
+#rzncofupbf p {
   margin: 0;
   padding: 0;
 }
 
-#skmsytpwmx .gt_table {
+#rzncofupbf .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -194,12 +198,12 @@ ul.task-list li input[type="checkbox"] {
   border-left-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_caption {
+#rzncofupbf .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#skmsytpwmx .gt_title {
+#rzncofupbf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -211,7 +215,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-width: 0;
 }
 
-#skmsytpwmx .gt_subtitle {
+#rzncofupbf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -223,7 +227,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-width: 0;
 }
 
-#skmsytpwmx .gt_heading {
+#rzncofupbf .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -235,13 +239,13 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_bottom_border {
+#rzncofupbf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_col_headings {
+#rzncofupbf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -256,7 +260,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_col_heading {
+#rzncofupbf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -276,7 +280,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#skmsytpwmx .gt_column_spanner_outer {
+#rzncofupbf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -288,15 +292,15 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 4px;
 }
 
-#skmsytpwmx .gt_column_spanner_outer:first-child {
+#rzncofupbf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#skmsytpwmx .gt_column_spanner_outer:last-child {
+#rzncofupbf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#skmsytpwmx .gt_column_spanner {
+#rzncofupbf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -308,11 +312,11 @@ ul.task-list li input[type="checkbox"] {
   width: 100%;
 }
 
-#skmsytpwmx .gt_spanner_row {
+#rzncofupbf .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#skmsytpwmx .gt_group_heading {
+#rzncofupbf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -338,7 +342,7 @@ ul.task-list li input[type="checkbox"] {
   text-align: left;
 }
 
-#skmsytpwmx .gt_empty_group_heading {
+#rzncofupbf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -353,15 +357,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 
-#skmsytpwmx .gt_from_md > :first-child {
+#rzncofupbf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#skmsytpwmx .gt_from_md > :last-child {
+#rzncofupbf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#skmsytpwmx .gt_row {
+#rzncofupbf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -380,7 +384,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#skmsytpwmx .gt_stub {
+#rzncofupbf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -393,7 +397,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#skmsytpwmx .gt_stub_row_group {
+#rzncofupbf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -407,15 +411,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: top;
 }
 
-#skmsytpwmx .gt_row_group_first td {
+#rzncofupbf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#skmsytpwmx .gt_row_group_first th {
+#rzncofupbf .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#skmsytpwmx .gt_summary_row {
+#rzncofupbf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -425,16 +429,16 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#skmsytpwmx .gt_first_summary_row {
+#rzncofupbf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_first_summary_row.thick {
+#rzncofupbf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#skmsytpwmx .gt_last_summary_row {
+#rzncofupbf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -444,7 +448,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_grand_summary_row {
+#rzncofupbf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -454,7 +458,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#skmsytpwmx .gt_first_grand_summary_row {
+#rzncofupbf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -464,7 +468,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_last_grand_summary_row_top {
+#rzncofupbf .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -474,11 +478,11 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_striped {
+#rzncofupbf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#skmsytpwmx .gt_table_body {
+#rzncofupbf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -487,7 +491,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_footnotes {
+#rzncofupbf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -501,7 +505,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_footnote {
+#rzncofupbf .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -510,7 +514,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#skmsytpwmx .gt_sourcenotes {
+#rzncofupbf .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -524,7 +528,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#skmsytpwmx .gt_sourcenote {
+#rzncofupbf .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -532,72 +536,72 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#skmsytpwmx .gt_left {
+#rzncofupbf .gt_left {
   text-align: left;
 }
 
-#skmsytpwmx .gt_center {
+#rzncofupbf .gt_center {
   text-align: center;
 }
 
-#skmsytpwmx .gt_right {
+#rzncofupbf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#skmsytpwmx .gt_font_normal {
+#rzncofupbf .gt_font_normal {
   font-weight: normal;
 }
 
-#skmsytpwmx .gt_font_bold {
+#rzncofupbf .gt_font_bold {
   font-weight: bold;
 }
 
-#skmsytpwmx .gt_font_italic {
+#rzncofupbf .gt_font_italic {
   font-style: italic;
 }
 
-#skmsytpwmx .gt_super {
+#rzncofupbf .gt_super {
   font-size: 65%;
 }
 
-#skmsytpwmx .gt_footnote_marks {
+#rzncofupbf .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#skmsytpwmx .gt_asterisk {
+#rzncofupbf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#skmsytpwmx .gt_indent_1 {
+#rzncofupbf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#skmsytpwmx .gt_indent_2 {
+#rzncofupbf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#skmsytpwmx .gt_indent_3 {
+#rzncofupbf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#skmsytpwmx .gt_indent_4 {
+#rzncofupbf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#skmsytpwmx .gt_indent_5 {
+#rzncofupbf .gt_indent_5 {
   text-indent: 25px;
 }
 
-#skmsytpwmx .katex-display {
+#rzncofupbf .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#skmsytpwmx div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#rzncofupbf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -734,6 +738,715 @@ ul.task-list li input[type="checkbox"] {
 <div>
 <figure class="figure">
 <p><img src="initial_pres_files/figure-html/unnamed-chunk-4-11.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mitotic-activity-vs-ki67-correlation" class="level3">
+<h3 class="anchored" data-anchor-id="mitotic-activity-vs-ki67-correlation">Mitotic Activity vs Ki67 Correlation</h3>
+<p>KM Curve for the categorical parts of the mitotic activity increase.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    0  1to5 6to10   &gt;10 
+    4    51    39    30 </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Seeing if there is trend between mitotic activity and Ki67</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  table(micat_df$mitotic_activity_increase, micat_df$Ki67_LI)
+p-value = 0.08192
+alternative hypothesis: two.sided</code></pre>
+</div>
+</div>
+<p>There is a slight association between mitotic activity and Ki67. Interaction curve:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    0.&lt;15%  1to5.&lt;15% 6to10.&lt;15%   &gt;10.&lt;15%      0.15%   1to5.15%  6to10.15% 
+         3         13          4          3          0          4          5 
+   &gt;10.15%     0.&gt;15%  1to5.&gt;15% 6to10.&gt;15%   &gt;10.&gt;15% 
+         3          1         32         27         22 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+coxph(formula = Surv(overall_survival, status == 1) ~ interaction_group, 
+    data = micat_df)
+
+  n= 81, number of events= 81 
+   (43 observations deleted due to missingness)
+
+                                coef exp(coef) se(coef)      z Pr(&gt;|z|)  
+interaction_group1to5.&lt;15%  -0.15198   0.85900  0.79659 -0.191   0.8487  
+interaction_group6to10.&lt;15%  1.44328   4.23457  1.24461  1.160   0.2462  
+interaction_group&gt;10.&lt;15%    0.24924   1.28305  1.00244  0.249   0.8036  
+interaction_group0.15%            NA        NA  0.00000     NA       NA  
+interaction_group1to5.15%    0.48194   1.61922  0.86740  0.556   0.5785  
+interaction_group6to10.15%  -0.38151   0.68283  1.00159 -0.381   0.7033  
+interaction_group&gt;10.15%    -0.44896   0.63829  0.92072 -0.488   0.6258  
+interaction_group0.&gt;15%      2.22878   9.28854  1.26809  1.758   0.0788 .
+interaction_group1to5.&gt;15%   0.42465   1.52906  0.74390  0.571   0.5681  
+interaction_group6to10.&gt;15% -0.07868   0.92434  0.74933 -0.105   0.9164  
+interaction_group&gt;10.&gt;15%   -0.56947   0.56582  0.75390 -0.755   0.4500  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+                            exp(coef) exp(-coef) lower .95 upper .95
+interaction_group1to5.&lt;15%     0.8590     1.1641   0.18028     4.093
+interaction_group6to10.&lt;15%    4.2346     0.2362   0.36931    48.554
+interaction_group&gt;10.&lt;15%      1.2830     0.7794   0.17987     9.152
+interaction_group0.15%             NA         NA        NA        NA
+interaction_group1to5.15%      1.6192     0.6176   0.29578     8.864
+interaction_group6to10.15%     0.6828     1.4645   0.09589     4.863
+interaction_group&gt;10.15%       0.6383     1.5667   0.10503     3.879
+interaction_group0.&gt;15%        9.2885     0.1077   0.77365   111.519
+interaction_group1to5.&gt;15%     1.5291     0.6540   0.35581     6.571
+interaction_group6to10.&gt;15%    0.9243     1.0819   0.21281     4.015
+interaction_group&gt;10.&gt;15%      0.5658     1.7673   0.12911     2.480
+
+Concordance= 0.627  (se = 0.033 )
+Likelihood ratio test= 14.14  on 10 df,   p=0.2
+Wald test            = 16.02  on 10 df,   p=0.1
+Score (logrank) test = 19.11  on 10 df,   p=0.04</code></pre>
+</div>
+</div>
+</section>
+<section id="median-age-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="median-age-analysis">Median Age Analysis</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see significance here, what about for dividing dataset into thirds?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And fourths?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mgmt-status" class="level3">
+<h3 class="anchored" data-anchor-id="mgmt-status">MGMT Status</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Benefit of methylated status comes out over time, greater overall survival.</p>
+<section id="mgmt-treated-by-stupps" class="level4">
+<h4 class="anchored" data-anchor-id="mgmt-treated-by-stupps">MGMT Treated by Stupps</h4>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Overall, when treated with Stupps, median survival time increases.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="gkhuinhjvg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gkhuinhjvg table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#gkhuinhjvg thead, #gkhuinhjvg tbody, #gkhuinhjvg tfoot, #gkhuinhjvg tr, #gkhuinhjvg td, #gkhuinhjvg th {
+  border-style: none;
+}
+
+#gkhuinhjvg p {
+  margin: 0;
+  padding: 0;
+}
+
+#gkhuinhjvg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#gkhuinhjvg .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gkhuinhjvg .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gkhuinhjvg .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gkhuinhjvg .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gkhuinhjvg .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gkhuinhjvg .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gkhuinhjvg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gkhuinhjvg .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#gkhuinhjvg .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#gkhuinhjvg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gkhuinhjvg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gkhuinhjvg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gkhuinhjvg .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gkhuinhjvg .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gkhuinhjvg .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gkhuinhjvg .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gkhuinhjvg .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#gkhuinhjvg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gkhuinhjvg .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gkhuinhjvg .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gkhuinhjvg .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gkhuinhjvg .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gkhuinhjvg .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gkhuinhjvg .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gkhuinhjvg .gt_left {
+  text-align: left;
+}
+
+#gkhuinhjvg .gt_center {
+  text-align: center;
+}
+
+#gkhuinhjvg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gkhuinhjvg .gt_font_normal {
+  font-weight: normal;
+}
+
+#gkhuinhjvg .gt_font_bold {
+  font-weight: bold;
+}
+
+#gkhuinhjvg .gt_font_italic {
+  font-style: italic;
+}
+
+#gkhuinhjvg .gt_super {
+  font-size: 65%;
+}
+
+#gkhuinhjvg .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#gkhuinhjvg .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gkhuinhjvg .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#gkhuinhjvg .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#gkhuinhjvg .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#gkhuinhjvg .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#gkhuinhjvg .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#gkhuinhjvg .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#gkhuinhjvg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="Received-Stupps?" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Received Stupps?</th>
+<th id="MGMT-Status" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">MGMT Status</th>
+<th id="Median-Survival-(Months)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Median Survival (Months)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Received Stupps?">no</td>
+<td class="gt_row gt_left" headers="MGMT Status">M</td>
+<td class="gt_row gt_right" headers="Median Survival (Months)">2.25</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Received Stupps?">yes</td>
+<td class="gt_row gt_left" headers="MGMT Status">M</td>
+<td class="gt_row gt_right" headers="Median Survival (Months)">15.00</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Received Stupps?">no</td>
+<td class="gt_row gt_left" headers="MGMT Status">UM</td>
+<td class="gt_row gt_right" headers="Median Survival (Months)">3.75</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Received Stupps?">yes</td>
+<td class="gt_row gt_left" headers="MGMT Status">UM</td>
+<td class="gt_row gt_right" headers="Median Survival (Months)">9.75</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We see that Stupps + Methylated Status = longest median survival time. Kruskal-Wallis test to test for significance.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  stupps_mgmt count  mean    sd median   IQR
+  &lt;fct&gt;       &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+1 no.M           26  4.74  8.11   2.25  2.38
+2 yes.M          53 18.1  16.1   15    20   
+3 no.UM          62  5.22  5.11   3.75  4.25
+4 yes.UM        103 11.1   6.45   9.75  8.31</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  overall_survival by stupps_mgmt
+Kruskal-Wallis chi-squared = 54.591, df = 3, p-value = 8.394e-12</code></pre>
+</div>
+</div>
+<p>Statistically significant difference in groups.</p>
+</section>
+</section>
+<section id="initial-seizures-and-dvtpe-data" class="level3">
+<h3 class="anchored" data-anchor-id="initial-seizures-and-dvtpe-data">Initial Seizures and DVT/PE Data</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                        Seizures Later
+Seizures at Presentation  no unclear yes
+                 no      141       0  60
+                 unclear   2       0   0
+                 yes      36       1  30</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                      DVT/PE Later
+DVT/PE at Presentation  no yes
+                   no  213  50
+                   yes   5   3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-17-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="initial_pres_files/figure-html/unnamed-chunk-17-4.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

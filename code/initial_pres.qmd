@@ -330,4 +330,9 @@ ggsurvfit(km) +
     )
 ```
 
+Looking at DVT/PE History
+
+```{r}
+table(df$dvt_pe_history)
+```
 

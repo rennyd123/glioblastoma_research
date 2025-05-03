@@ -1,0 +1,71 @@
+---
+format:
+  html: 
+    warning: false 
+    echo: false 
+---
+
+### Clustering
+
+Getting a sense of the question: are there subtypes? If so, what are they based on? 
+
+```{r}
+library(tidyverse)
+library(survival)
+library(survminer)
+library(cluster)
+library(ConsensusClusterPlus)
+library(factoextra)
+library(ComplexHeatmap)
+library(dplyr)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv")
+cols_drop <- c("...1")
+df <- df %>% dplyr::select(-all_of(cols_drop))
+df <- df %>% filter(exclude == 0)
+colnames(df)
+```
+
+```{r}
+surv_obj <- Surv(df$overall_survival, df$status)
+
+selected_features <- c()
+significance_values <- c()
+
+exclude_cols <- c("patient_id", "status", "exclude", "vital_status")
+df_subset <- df %>% select(-all_of(exclude_cols))
+df_subset <- df_subset[, 1:46]
+
+for (feature in colnames(df_subset)) { 
+  # creating formula
+  cox_formula <- as.formula(paste("surv_obj ~", feature))
+  cox_model <- coxph(cox_formula, data = df)
+  
+  # extract p-value
+  p_val <- summary(cox_model)$coefficients[1, 5]
+  
+  # if significant, add to selected features
+  if (!is.na(p_val) && p_val < 0.05) {
+        selected_features <- c(selected_features, feature)
+        significance_values <- c(significance_values, p_val)
+  }
+}
+
+# significant vars based on univariate cox
+sig_df <- df[, c("patient_id", selected_features)]
+
+# creating matrix for clustering
+data_matrix <- as.matrix(sig_df[, -1])
+rownames(data_matrix) <- sig_df$patient_id
+
+# clustering
+results <- ConsensusClusterPlus(data_matrix,
+                                maxK = 6,
+                                reps = 1000,
+                                pItem = 0.8,
+                                pFeature = 0.8,
+                                clusterAlg = "pam",
+                                distance = "euclidean",
+                                seed = 123,
+                                plot = "png")
+```

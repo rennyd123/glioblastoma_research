@@ -15,7 +15,7 @@ library(tidyverse)
 library(dplyr)
 
 df <- read_csv("../data/cleaned_data/cleaned_data.csv")
-cols_drop <- c("...1", "exclude")
+cols_drop <- c("...1", "exclude", "lobes_involved")
 df <- df %>% dplyr::select(-all_of(cols_drop))
 ```
 

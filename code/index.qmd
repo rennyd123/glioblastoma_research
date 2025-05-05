@@ -3,7 +3,3 @@
 The project is an institutional review through Georgetown MedStar's Neuro-Oncology clinic. We have approximately 300 glioblastoma patients diagnosed between 2021 and 2024. \
 
 In 2021, the WHO updated their classification for glioblastomas which prompted a need for updated research. This study uniquely includes "pure" glioblastomas. Therefore, our goal is to learn as much as we can about the disease under the new classifications. 
-
-### Where I'm Stuck
-
-As expected, because our goal is to learn and I am the biostatistician on the study, there has been little guidance for the analysis. So far, I have run K-M and Cox models on all the variables and have figured out which are independently significant, and have also explored the relationship between two specific variables my PI wanted me to. Where to go next is where I am getting stuck. I am trying to efficiently find insights and ensure I am fully exploring the data set without wasting my time. 

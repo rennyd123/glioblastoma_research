@@ -149,6 +149,7 @@ table(micat_df$interaction_group)
 
 summary(coxph(Surv(overall_survival, status == 1) ~ interaction_group, data = micat_df))
 ```
+
 ### Median Age Analysis
 
 ```{r}

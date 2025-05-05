@@ -1,0 +1,523 @@
+---
+format:
+  html: 
+    warning: false 
+    echo: false 
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(gt)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggsurvfit)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv")
+cols_drop <- c("...1")
+df <- df %>% dplyr::select(-all_of(cols_drop))
+df <- df %>% filter(exclude == 0)
+```
+
+### Treatment Summary
+
+- what % of patients had stupps
+- what % of patients had chemoradiation but no stupps
+- what % of patients only did RT
+- what % of patients only did chemo 
+- what % of patients got no treatment 
+
+### Is there a difference in overall survival for MGMT unmethylated and methylated status patients who received the Stupp protocol? 
+
+```{r}
+df_stupps <- df %>% filter(received_stupp == "yes")
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation, data = df_stupps)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients Treated with Stupps by MGMT Status"
+    )
+```
+```{r}
+df$stupps_mgmt <- interaction(df$received_stupp, df$MGMT_methylation)
+
+fit <- survfit(Surv(overall_survival, status == 1) ~ stupps_mgmt, data = df)
+medians <- surv_median(fit)
+
+medians_df <- data.frame(group = names(summary(fit)$table[, "median"]),
+                         median_survival = summary(fit)$table[, "median"])
+
+medians_df <- medians_df %>%
+  separate(group, into = c("received_stupp", "mgmt_status"), sep = "\\.") %>%
+  mutate(received_stupp = sub(".*=", "", received_stupp))  
+
+colnames(medians_df) <- c("Received Stupps?", "MGMT Status", "Median Survival (Months)")
+
+medians_df %>% gt()
+```
+
+We see that Stupps + Methylated Status = longest median survival time. Kruskal-Wallis test to test for significance.
+
+```{r}
+df_stupps <- df %>% filter(stupps_mgmt %in% c("no.M", "yes.M", "no.UM", "yes.UM"))
+
+ggboxplot(df_stupps, 
+          x = "stupps_mgmt", 
+          y = "overall_survival", 
+          color = "stupps_mgmt", 
+          order = c("no.M", "yes.M", "no.UM", "yes.UM"),
+          ylab = "Overall Survival", 
+          xlab = "Stupps/MGMT Combination") +
+  scale_x_discrete(labels = c("no.M" = "No Stupp\nMethylated", 
+                              "yes.M" = "Yes Stupp\nMethylated",
+                              "no.UM" = "No Stupp\nUnmethylated", 
+                              "yes.UM" = "Yes Stupp\nUnmethylated")) + 
+  scale_color_manual(values = c("no.M" = "#00AFBB", 
+                                "yes.M" = "#E7B800", 
+                                "no.UM" = "#FC4E07", 
+                                "yes.UM" = "forestgreen"),
+                     labels = c("No Stupp\nMethylated", 
+                                "Yes Stupp\nMethylated", 
+                                "No Stupp\nUnmethylated", 
+                                "Yes Stupp\nUnmethylated")) + 
+  labs(color = "Stupps/MGMT Status")
+```
+
+```{r}
+library(dplyr)
+library(broom)
+
+broom::tidy(kruskal.test(overall_survival ~ stupps_mgmt, data = df_stupps))
+```
+### Median Age Analysis
+
+```{r}
+median_age <- median(df$diagnosis_age)
+
+df$median_age_status <- cut(df$diagnosis_age,
+                    breaks = c(0, 66, 100),  
+                    labels = c("Below Median", "Equal to or Above Median"),  
+                    right = FALSE)
+
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ median_age_status, data = df)
+ggsurvfit(km_median_age) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups Above and Below Median Age"
+    )
+```
+
+We see significance here, what about for dividing dataset into thirds?
+
+```{r}
+df$age_thirds <- cut(df$diagnosis_age, 
+                     breaks = c(0, 52, 72, 100), 
+                     labels = c("31-51", "52-71", "72-91"), 
+                     right = FALSE)
+
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_thirds, data = df)
+ggsurvfit(km_median_age) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Age Groups (Thirds)"
+    )
+```
+
+And fourths? 
+
+```{r}
+df$age_fourths <- cut(df$diagnosis_age, 
+                     breaks = c(0, 46, 61, 77, 100), 
+                     labels = c("31-45", "46-60", "61-76", "77-91"), 
+                     right = FALSE)
+
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_fourths, data = df)
+ggsurvfit(km_median_age) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Age Groups (Fourths)"
+    )
+```
+
+### Is temozolomide making a difference? 
+
+```{r}
+df$num_chemo <- factor(df$num_chemo, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ num_chemo, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Number of Chemotherapy Cycles"
+    )
+```
+
+Temozolomide makes a huge difference in overall survival. We can see that patients that received three or more cycles had the longest survival times. Below is a summary table of each chemo group. 
+
+```{r}
+chemo_freq <- data.frame(table(df$num_chemo))
+colnames(chemo_freq) <- c("Number of Chemo Cycles", "Count")
+chemo_freq$`Percentage of Patients` <- round(((chemo_freq$Count)/(sum(chemo_freq$Count))*100), 2)
+
+df_chemo <- df %>% filter(!is.na(num_chemo)) %>% filter(!is.na(overall_survival))
+
+mean_survival_chemo <- df_chemo %>%
+  group_by(num_chemo) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_chemo) <- c("Number of Chemo Cycles", "Mean Overall Survival")
+
+chemo_stats <- merge(chemo_freq, mean_survival_chemo, by = "Number of Chemo Cycles", all = TRUE)
+chemo_stats %>% arrange(`Number of Chemo Cycles`) %>% gt()
+
+broom::tidy(kruskal.test(overall_survival ~ num_chemo, data = df_chemo))
+```
+
+### Mitotic Activity vs Ki67 Correlation 
+
+KM Curve for the categorical parts of the mitotic activity increase. 
+
+```{r}
+# KM curve for mitotic activity 
+micat_df <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+micat_df$mitotic_activity_increase <- factor(micat_df$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
+
+mai_count <- data.frame(table(micat_df$mitotic_activity_increase))
+colnames(mai_count) <- c("Mitotic Activity Increase Category", "Count")
+mai_count
+```
+
+Looking at Kaplan-Meier survival curves 
+
+```{r}
+micat_df_nz <- df %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
+micat_df_nz$mitotic_activity_increase <- factor(micat_df_nz$mitotic_activity_increase, levels = c("1to5", "6to10", ">10"))
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Mitotic Activity Increase Category"
+    )
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df_nz)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Mitotic Activity Increase Category (Excluding 0)"
+    )
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_LI, data = micat_df_nz)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Ki67 Proliferation Index Category"
+    )
+```
+
+Seeing if there is trend between mitotic activity and Ki67 proliferation index.
+
+```{r}
+micat_df$Ki67_LI <- factor(micat_df$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+
+broom::tidy(fisher.test(table(micat_df$mitotic_activity_increase, micat_df$Ki67_LI)))
+```
+There is a slight association between mitotic activity and Ki67.
+
+```{r}
+# cox 
+coxph(Surv(overall_survival, status == 1) ~ Ki67_LI + mitotic_activity_increase, data = micat_df)
+```
+
+Ki67 vs Mitotic Index- are they correlated? Is this prognostic (correlated with OS?) 
+
+### Seizures and DVT? 
+
+#### Seizures at Presentation/During Course
+
+```{r}
+tbl0 <- data.frame(table(df$seizures_presentation))
+colnames(tbl0) <- c("Seizures at Presentation?", "Count")
+tbl0$`Percentage of Patients` <- round(((tbl0$Count)/(sum(tbl0$Count)))*100, 2)
+tbl0 %>% gt()
+```
+
+```{r}
+tbl1 <- data.frame(table(df$seizures_later))
+colnames(tbl1) <- c("Seizures During Course?", "Count")
+tbl1$`Percentage of Patients` <- round(((tbl1$Count)/(sum(tbl1$Count)))*100, 2)
+tbl1 %>% gt()
+```
+
+
+```{r}
+tbl01 <- data.frame(table(interaction(df$seizures_presentation, df$seizures_later)))
+colnames(tbl01) <- c("Seizures at Presentation/Seizure During Course", "Count")
+tbl01$`Percentage of Patients` <- round(((tbl01$Count)/(sum(tbl01$Count)))*100, 2)
+tbl01 <- separate(tbl01, `Seizures at Presentation/Seizure During Course`, into = c("Seizures at Presentation", "Seizures During Course"), sep = "\\.")
+
+tbl01_clean <- tbl01 %>%
+  filter(`Seizures at Presentation` != "unclear" & `Seizures During Course` != "unclear")
+
+df$seizure_interaction <- interaction(df$seizures_presentation, df$seizures_later)
+
+df_seizure <- df %>% filter(!is.na(overall_survival)) %>% filter(!is.na(seizure_interaction))
+df_seizure <- df_seizure %>% filter(!grepl("unclear", seizure_interaction))
+
+mean_survival_seizure <- df_seizure %>%
+  group_by(seizure_interaction) %>%
+  summarise(mean_survival = mean(overall_survival))
+mean_survival_seizure <- separate(mean_survival_seizure, seizure_interaction, into = c("Seizures at Presentation", "Seizures During Course"), sep = "\\.")
+mean_survival_seizure_clean <- mean_survival_seizure %>%
+  filter(`Seizures at Presentation` != "unclear" & `Seizures During Course` != "unclear")
+
+
+merged_seizure <- merge(tbl01_clean, mean_survival_seizure_clean, by = c("Seizures at Presentation", "Seizures During Course"), how = "outer")
+
+colnames(merged_seizure) <- c("Seizures at Presentation", "Seizures During Course", "Count", "Percentage of Patients", "Mean Survival")
+
+merged_seizure %>% gt()
+
+broom::tidy(kruskal.test(overall_survival ~ seizure_interaction, data = df_seizure))
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizure_interaction, data = df_seizure)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Seizure at Presentation/During Course"
+    )
+```
+
+
+
+```{r}
+df_sei_dvt <- df %>% filter(seizures_presentation != "unclear" & seizures_later != "unclear") 
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizure_interaction, data = df_sei_dvt)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival of Patients With Seizures At Presentation"
+    )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_later, data = df_sei_dvt)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival of Patients With Seizures During Course"
+    )
+```
+#### DVT/PE at Presentation/During Course
+
+```{r}
+tbl2 <- data.frame(table(df$dvt_pe_presentation))
+colnames(tbl2) <- c("DVT/PE at Presentation?", "Count")
+tbl2$`Percentage of Patients` <- round(((tbl2$Count)/(sum(tbl2$Count)))*100, 2)
+tbl2 %>% gt()
+```
+
+```{r}
+tbl3 <- data.frame(table(df$dvt_pe_during))
+colnames(tbl3) <- c("DVT/PE During Course?", "Count")
+tbl3$`Percentage of Patients` <- round(((tbl3$Count)/(sum(tbl3$Count)))*100, 2)
+tbl3 %>% gt()
+```
+
+```{r}
+tbl23 <- data.frame(table(interaction(df$dvt_pe_presentation, df$dvt_pe_during)))
+colnames(tbl23) <- c("DVT/PE at Presentation/DVT/PE During Course", "Count")
+tbl23$`Percentage of Patients` <- round(((tbl23$Count)/(sum(tbl23$Count)))*100, 2)
+tbl23 <- separate(tbl23, `DVT/PE at Presentation/DVT/PE During Course`, into = c("DVT/PE at Presentation", "DVT/PE During Course"), sep = "\\.")
+
+df$dvt_pe_interaction <- interaction(df$dvt_pe_presentation, df$dvt_pe_during)
+
+df_dvtpe <- df %>% filter(!is.na(overall_survival)) %>% filter(!is.na(dvt_pe_interaction))
+
+mean_survival_dvtpe <- df_dvtpe %>%
+  group_by(dvt_pe_interaction) %>%
+  summarise(mean_survival = mean(overall_survival))
+mean_survival_dvtpe <- separate(mean_survival_dvtpe, dvt_pe_interaction, into = c("DVT/PE at Presentation", "DVT/PE During Course"), sep = "\\.")
+
+merged_dvt_pe <- merge(tbl23, mean_survival_dvtpe, by = c("DVT/PE at Presentation", "DVT/PE During Course"), how = "outer")
+
+colnames(merged_dvt_pe) <- c("Seizures at Presentation", "Seizures During Course", "Count", "Percentage of Patients", "Mean Survival")
+
+merged_dvt_pe %>% gt()
+
+broom::tidy(kruskal.test(overall_survival ~ dvt_pe_interaction, data = df_dvtpe))
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ dvt_pe_interaction, data = df_dvtpe)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by DVT/PE at Presentation/During Course"
+    )
+```
+
+
+```{r}
+km <- survfit2(Surv(overall_survival, status == 1) ~ dvt_pe_presentation, data = df_sei_dvt)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival of Patients With DVT/PE at Presentation"
+    )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ dvt_pe_during, data = df_sei_dvt)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Survival of Patients With DVT/PE During Course"
+    )
+```
+
+
+
+
+Looking at DVT/PE History
+
+```{r}
+dvt_pe_hist <- data.frame(table(df$dvt_pe_history))
+colnames(dvt_pe_hist) <- c("History of DVT/PE?", "Count")
+dvt_pe_hist %>% gt()
+```
+
+### Time Between Symptoms & Diagnosis 
+
+```{r}
+tsd_df <- df %>%
+  summarise(
+    min_time = min(time_symptoms_diagnosis, na.rm = TRUE),
+    max_time = max(time_symptoms_diagnosis, na.rm = TRUE),
+    mean_time = mean(time_symptoms_diagnosis, na.rm = TRUE),
+    median_time = median(time_symptoms_diagnosis, na.rm = TRUE),
+  )
+
+colnames(tsd_df) <- c("Min Time", "Max Time", "Mean Time", "Median Time")
+tsd_df %>% gt()
+
+ggplot(df, aes(x = time_symptoms_diagnosis)) +
+  geom_density(fill = "skyblue") +
+  labs(title = "Density Plot of Time From Onset of Symptoms to Diagnosis", x = "Time (Months)", y = "Density") +
+  theme_minimal()
+```
+```{r}
+df <- df %>% mutate(
+  tsd_group = case_when(
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.5 ~ "≤ 0.5 Months",
+    time_symptoms_diagnosis > 0.5 ~ "> 0.5 Months"
+  )
+)
+
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Time from Onset of Symptoms to Diagnosis (Median)"
+    )
+```
+
+```{r}
+df <- df %>% mutate(
+  tsd_group = case_when(
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 1.86 ~ "≤ 1.86",
+    time_symptoms_diagnosis > 1.86 ~ "> 1.86"
+  )
+)
+
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Time from Onset of Symptoms to Diagnosis (Mean)"
+    )
+```
+
+```{r}
+df <- df %>% mutate(
+  tsd_group = case_when(
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.5 ~ "≤ 0.5 Months",
+    time_symptoms_diagnosis > 0.5 ~ "> 0.5 Months"
+  )
+)
+
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + received_stupp, data = df)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Time from Symptoms to Diagnosis + Stupp Status"
+    )
+```
+
+#### Time from Surgery to Start of Radiation
+
+```{r}
+ttr_df <- df %>%
+  summarise(
+    min_time = min(time_surgery_radiation, na.rm = TRUE),
+    max_time = max(time_surgery_radiation, na.rm = TRUE),
+    mean_time = mean(time_surgery_radiation, na.rm = TRUE),
+    median_time = median(time_surgery_radiation, na.rm = TRUE),
+  )
+
+colnames(ttr_df) <- c("Min Time", "Max Time", "Mean Time", "Median Time")
+ttr_df %>% gt()
+
+ggplot(df, aes(x = time_surgery_radiation)) +
+  geom_density(fill = "skyblue") +
+  labs(title = "Density Plot of Time From Diagosis to Radiation", x = "Time (Weeks)", y = "Density") +
+  theme_minimal()
+
+df <- df %>% mutate(
+  ttr_group = case_when(
+    time_surgery_radiation >= 0 & time_surgery_radiation <= 6 ~ "0-1.5 Months",
+    time_surgery_radiation > 6 ~ "> 1.5 Month"
+  )
+)
+
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ ttr_group, data = df)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Time from Diagnosis to Start of Radiation"
+    )
+```
+```{r}
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + ttr_group, data = df)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    y = "Survival Probability",
+    title = "Overall Survival by Time from Onset of Symptoms to Diagnosis (TSD)\n+ Time from Diagnosis to Start of Radiation (TTR)"
+  ) +
+  scale_color_manual(
+    values = c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF"), 
+    labels = c(
+      "> 0.5 Months TSD, > 1.5 Months TTR", 
+      "> 0.5 Months TSD, 0-1.5 Months TTR", 
+      "≤ 0.5 Months TSD, > 1.5 Months TTR", 
+      "≤ 0.5 Months TSD, 0-1.5 Months TTR"
+    )
+  ) +
+  theme_minimal()
+```

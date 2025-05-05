@@ -17,6 +17,7 @@ library(ConsensusClusterPlus)
 library(factoextra)
 library(dplyr)
 library(tidyverse)
+library(survival)
 
 df <- read_csv("../data/cleaned_data/cleaned_data.csv")
 cols_drop <- c("...1")
@@ -30,104 +31,104 @@ path_df <- path_df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to
 ```
 
 ```{r}
-surv_obj <- Surv(path_df$overall_survival, path_df$status)
-
-selected_features <- c()
-significance_values <- c()
-
-df_subset <- df[, 1:49]
-if (!"status" %in% colnames(df_subset)) {
-  df_subset$status <- df$status
-}
-
-# creating matrix for clustering
-data_matrix <- as.matrix(path_df[, -1])
-rownames(data_matrix) <- path_df$patient_id
-
-path_df_check <- as.data.frame(data_matrix)
-str(path_df_check)
-
-path_df_fixed <- path_df_check
-for(i in 1:ncol(path_df_fixed)) {
-  if(is.character(path_df_fixed[,i])) {
-    path_df_fixed[,i] <- as.factor(path_df_fixed[,i])
-  }
-}
-
-# clustering
-library(cluster)
-gower_dist <- daisy(path_df_fixed, metric = "gower")
-
-# use this distance matrix for clustering
-results <- ConsensusClusterPlus(as.matrix(gower_dist),
-                               maxK = 6,
-                               reps = 1000,
-                               pItem = 0.8,
-                               pFeature = 0.8,
-                               clusterAlg = "hc", 
-                               seed = 123,
-                               distance = "euclidean",
-                               plot = "png")
-
-
-k_values <- 2:6
-cluster_assignments <- list()
-
-for (k in k_values) {
-  cluster_assignments[[paste0("k", k)]] <- results[[k]]$consensusClass
-  
-  df_subset[[paste0("cluster_k", k)]] <- factor(results[[k]]$consensusClass[match(df_subset$patient_id, rownames(data_matrix))])
-  
-  # print distribution
-  print(paste("Cluster distribution for k =", k))
-  print(table(df_subset[[paste0("cluster_k", k)]]))
-}
-
-# no delta values
-
-# plotting km 
-
-surv_obj <- Surv(df_subset$overall_survival, df_subset$status == 1)
-
-# Compare survival by cluster for each k
-survival_p_values <- c()
-
-for (k in k_values) {
-  cluster_col <- paste0("cluster_k", k)
-  
-  # generate Kaplan-Meier curves
-  fit <- survfit(as.formula(paste("surv_obj ~", cluster_col)), data = df_subset)
-  
-  # get p-value from log-rank test
-  diff <- survdiff(as.formula(paste("surv_obj ~", cluster_col)), data = df_subset)
-  p_val <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
-  survival_p_values[k-1] <- p_val
-  
-  # plot survival curves
-  print(paste("Survival curves for k =", k, ", p-value =", round(p_val, 4)))
-}
-  
+#surv_obj <- Surv(path_df$overall_survival, path_df$status)
+#
+#selected_features <- c()
+#significance_values <- c()
+#
+#df_subset <- df[, 1:49]
+#if (!"status" %in% colnames(df_subset)) {
+#  df_subset$status <- df$status
+#}
+#
+## creating matrix for clustering
+#data_matrix <- as.matrix(path_df[, -1])
+#rownames(data_matrix) <- path_df$patient_id
+#
+#path_df_check <- as.data.frame(data_matrix)
+#str(path_df_check)
+#
+#path_df_fixed <- path_df_check
+#for(i in 1:ncol(path_df_fixed)) {
+#  if(is.character(path_df_fixed[,i])) {
+#    path_df_fixed[,i] <- as.factor(path_df_fixed[,i])
+#  }
+#}
+#
+## clustering
+#library(cluster)
+#gower_dist <- daisy(path_df_fixed, metric = "gower")
+#
+## use this distance matrix for clustering
+#results <- ConsensusClusterPlus(as.matrix(gower_dist),
+#                               maxK = 6,
+#                               reps = 1000,
+#                               pItem = 0.8,
+#                               pFeature = 0.8,
+#                               clusterAlg = "hc", 
+#                               seed = 123,
+#                               distance = "euclidean",
+#                               plot = "png")
+#
+#
+#k_values <- 2:6
+#cluster_assignments <- list()
+#
+#for (k in k_values) {
+#  cluster_assignments[[paste0("k", k)]] <- results[[k]]$consensusClass
+#  
+#  df_subset[[paste0("cluster_k", k)]] <- factor(results[[k]]$consensusClass[match(df_subset$patient_id, #rownames(data_matrix))])
+#  
+#  # print distribution
+#  print(paste("Cluster distribution for k =", k))
+#  print(table(df_subset[[paste0("cluster_k", k)]]))
+#}
+#
+## no delta values
+#
+## plotting km 
+#
+#surv_obj <- Surv(df_subset$overall_survival, df_subset$status == 1)
+#
+## Compare survival by cluster for each k
+#survival_p_values <- c()
+#
+#for (k in k_values) {
+#  cluster_col <- paste0("cluster_k", k)
+#  
+#  # generate Kaplan-Meier curves
+#  fit <- survfit(as.formula(paste("surv_obj ~", cluster_col)), data = df_subset)
+#  
+#  # get p-value from log-rank test
+#  diff <- survdiff(as.formula(paste("surv_obj ~", cluster_col)), data = df_subset)
+#  p_val <- 1 - pchisq(diff$chisq, length(diff$n) - 1)
+#  survival_p_values[k-1] <- p_val
+#  
+#  # plot survival curves
+#  print(paste("Survival curves for k =", k, ", p-value =", round(p_val, 4)))
+#}
+#  
 ```
 
 #### Second Clustering Method
 
 ```{r}
-if (!require("survclust")) {
-  install.packages("devtools")
-  devtools::install_github("arorarshi/survClust")
-  library(survclust)
-}
-
-library(survclust)
-
-# Perform survival-aware clustering
-surv_results <- survClust(data = as.matrix(path_df_fixed),
-                         k = 3,  # Number of clusters
-                         survival_data = list(time = clinical_df$time, 
-                                             event = clinical_df$event))
-
-# Extract clusters
-clinical_df$surv_cluster <- surv_results$cluster
-
-
+#if (!require("survclust")) {
+#  install.packages("devtools")
+#  devtools::install_github("arorarshi/survClust")
+#  library(survclust)
+#}
+#
+#library(survclust)
+#
+## Perform survival-aware clustering
+#surv_results <- survClust(data = as.matrix(path_df_fixed),
+#                         k = 3,  # Number of clusters
+#                         survival_data = list(time = clinical_df$time, 
+#                                             event = clinical_df$event))
+#
+## Extract clusters
+#clinical_df$surv_cluster <- surv_results$cluster
+#
+#
 ```

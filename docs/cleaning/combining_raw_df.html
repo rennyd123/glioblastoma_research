@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Initial Analysis - Getting Into Proper Column Format</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Initial Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../data_summary.html"> 
+<span class="menu-text">Data Summary</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../eda.html"> 
+<span class="menu-text">EDA</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../initial_pres.html"> 
+<span class="menu-text">Initial Analysis</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#getting-into-proper-column-format" id="toc-getting-into-proper-column-format" class="nav-link active" data-scroll-target="#getting-into-proper-column-format">Getting Into Proper Column Format</a></li>
+  <li><a href="#combining-all-together" id="toc-combining-all-together" class="nav-link" data-scroll-target="#combining-all-together">Combining All Together</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Getting Into Proper Column Format</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-0" class="cell" data-execution_count="83">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>demographics <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/demographics_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>characteristics <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/characteristics_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>tumor_path <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/tumor_path_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-1" class="cell" data-execution_count="84">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>demographics.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="84">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Community Medical Record Number</th>
+<th data-quarto-table-cell-role="th">Patient ID</th>
+<th data-quarto-table-cell-role="th">Patient Name</th>
+<th data-quarto-table-cell-role="th">Patient Date of Birth</th>
+<th data-quarto-table-cell-role="th">Age</th>
+<th data-quarto-table-cell-role="th">Gender</th>
+<th data-quarto-table-cell-role="th">Race</th>
+<th data-quarto-table-cell-role="th">Date of Diagnosis</th>
+<th data-quarto-table-cell-role="th">Age at Diagnosis</th>
+<th data-quarto-table-cell-role="th">Renee or Sofia</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">.10</th>
+<th data-quarto-table-cell-role="th">.11</th>
+<th data-quarto-table-cell-role="th">.12</th>
+<th data-quarto-table-cell-role="th">.13</th>
+<th data-quarto-table-cell-role="th">.14</th>
+<th data-quarto-table-cell-role="th">.15</th>
+<th data-quarto-table-cell-role="th">.16</th>
+<th data-quarto-table-cell-role="th">.17</th>
+<th data-quarto-table-cell-role="th">.18</th>
+<th data-quarto-table-cell-role="th">.19</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td></td>
+<td></td>
+<td></td>
+<td>(MM/DD/YYYY)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>(MM/DD/YYYY)</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>mrn</td>
+<td>patient_id</td>
+<td>patient_name</td>
+<td>dob</td>
+<td>age</td>
+<td>gender</td>
+<td>race</td>
+<td>diagnosis_date</td>
+<td>diagnosis_age</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>034985108</td>
+<td>1</td>
+<td>NICOLAE, CORNELIU</td>
+<td>6/3/1945</td>
+<td>79 years</td>
+<td>Male</td>
+<td>other</td>
+<td>12/2/2024</td>
+<td>79</td>
+<td>S</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>017875363</td>
+<td>2</td>
+<td>MELLGREN, KENNETH WAYNE</td>
+<td>11/19/1945</td>
+<td>79 years</td>
+<td>Male</td>
+<td>white</td>
+<td>10/29/2024</td>
+<td>78</td>
+<td>S</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>052674572</td>
+<td>3</td>
+<td>BRITO SALINAS, ALVARO R</td>
+<td>3/8/1966</td>
+<td>58 years</td>
+<td>Male</td>
+<td>white</td>
+<td>10/2/2024</td>
+<td>58</td>
+<td>S</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 32 columns</p>
+</div>
+</div>
+</div>
+<section id="getting-into-proper-column-format" class="level3">
+<h3 class="anchored" data-anchor-id="getting-into-proper-column-format">Getting Into Proper Column Format</h3>
+<section id="demographics" class="level4">
+<h4 class="anchored" data-anchor-id="demographics">Demographics</h4>
+<div id="cell-4" class="cell" data-execution_count="85">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>demographics.columns <span class="op">=</span> demographics.columns.<span class="bu">str</span>.strip()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>demographics.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="85">
+<pre><code>Index(['Community Medical Record Number', 'Patient ID', 'Patient Name',
+       'Patient Date of Birth', 'Age', 'Gender', 'Race', 'Date of Diagnosis',
+       'Age at Diagnosis', 'Renee or Sofia', 'Checked?', 'Exclude Prelim', '',
+       '.1', '.2', '.3', '.4', '.5', '.6', '.7', '.8', '.9', '.10', '.11',
+       '.12', '.13', '.14', '.15', '.16', '.17', '.18', '.19'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="cell-5" class="cell" data-execution_count="86">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>demo_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Gender'</span>, <span class="st">'Race'</span>, <span class="st">'Age at Diagnosis'</span>, <span class="st">"Exclude Prelim"</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>demo_subset_cols <span class="op">=</span> demographics[demo_keep_cols]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>demo_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="86">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Patient ID</th>
+<th data-quarto-table-cell-role="th">Gender</th>
+<th data-quarto-table-cell-role="th">Race</th>
+<th data-quarto-table-cell-role="th">Age at Diagnosis</th>
+<th data-quarto-table-cell-role="th">Exclude Prelim</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>patient_id</td>
+<td>gender</td>
+<td>race</td>
+<td>diagnosis_age</td>
+<td>exclude</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>Male</td>
+<td>other</td>
+<td>79</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>Male</td>
+<td>white</td>
+<td>78</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>3</td>
+<td>Male</td>
+<td>white</td>
+<td>58</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">281</td>
+<td>291</td>
+<td>Female</td>
+<td>white</td>
+<td>64</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">282</td>
+<td>292</td>
+<td>Male</td>
+<td>black</td>
+<td>75</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">283</td>
+<td>293</td>
+<td>Female</td>
+<td>black</td>
+<td>85</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">284</td>
+<td>294</td>
+<td>Male</td>
+<td>white</td>
+<td>76</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">285</td>
+<td>295</td>
+<td>Male</td>
+<td>white</td>
+<td>36</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>286 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="87">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> demo_subset_cols.iloc[<span class="dv">1</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>demo_subset_cols <span class="op">=</span> demo_subset_cols[<span class="dv">2</span>:]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.columns <span class="op">=</span> new_header</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>demo_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="87">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">gender</th>
+<th data-quarto-table-cell-role="th">race</th>
+<th data-quarto-table-cell-role="th">diagnosis_age</th>
+<th data-quarto-table-cell-role="th">exclude</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Male</td>
+<td>other</td>
+<td>79</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Male</td>
+<td>white</td>
+<td>78</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Male</td>
+<td>white</td>
+<td>58</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>Male</td>
+<td>white</td>
+<td>57</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>Male</td>
+<td>white</td>
+<td>82</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">279</td>
+<td>291</td>
+<td>Female</td>
+<td>white</td>
+<td>64</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">280</td>
+<td>292</td>
+<td>Male</td>
+<td>black</td>
+<td>75</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">281</td>
+<td>293</td>
+<td>Female</td>
+<td>black</td>
+<td>85</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">282</td>
+<td>294</td>
+<td>Male</td>
+<td>white</td>
+<td>76</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">283</td>
+<td>295</td>
+<td>Male</td>
+<td>white</td>
+<td>36</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>284 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="88">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="88">
+<pre><code>Index(['patient_id', 'gender ', 'race', 'diagnosis_age', 'exclude'], dtype='object', name=1)</code></pre>
+</div>
+</div>
+</section>
+<section id="clinical-characteristics" class="level4">
+<h4 class="anchored" data-anchor-id="clinical-characteristics">Clinical Characteristics</h4>
+<div id="cell-9" class="cell" data-execution_count="89">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>characteristics.columns <span class="op">=</span> characteristics.columns.<span class="bu">str</span>.strip()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>characteristics.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="89">
+<pre><code>Index(['Medical Record Number', 'Patient ID', 'Patient Name', 'Vital Status',
+       'Institution Type at Presentation', 'Overall Survival',
+       'Extent of Resection', 'Surgery Date', 'Number of Surgeries',
+       'Number of Radiation Treatments (cycles)',
+       'Number of Chemotherapy Treatments (cycles)',
+       'Discontinued Treatment prematurely?',
+       'Time from first surgery to start of radiation (weeks)',
+       'Received Stupp protocol?', 'Discontinued Stupps prematurely?',
+       'Time from onset of symptoms to diagnosis by biopsy (months)',
+       'Time from onset of symptoms to death (months)', 'Date of Death',
+       'Patient on Treatment at last visit?',
+       'Number of brain lobes involved at presentation',
+       'Brain Lobes involved at presentation',
+       'Other brain regions involved at presentation?',
+       'Any unique clinical findings', 'Seizure at presentation?',
+       'Seizures later in course?', 'DVT/ PE at presentation',
+       'DVT/ PE during the course?', 'Additional?', '', '.1', '.2',
+       'Unnamed: 31', 'Unnamed: 32', 'Unnamed: 33', 'Unnamed: 34',
+       'Unnamed: 35', 'Unnamed: 36', 'Unnamed: 37', 'Unnamed: 38',
+       'Unnamed: 39', 'Unnamed: 40', 'Unnamed: 41', 'Unnamed: 42',
+       'Unnamed: 43', 'Unnamed: 44', 'Unnamed: 45', 'Unnamed: 46',
+       'Unnamed: 47', 'Unnamed: 48', 'Unnamed: 49', 'Unnamed: 50',
+       'Unnamed: 51', 'Unnamed: 52', 'Unnamed: 53', 'Unnamed: 54',
+       'Unnamed: 55'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="cell-10" class="cell" data-execution_count="90">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>char_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Vital Status'</span>, <span class="st">'Institution Type at Presentation'</span>, <span class="st">'Overall Survival'</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Extent of Resection'</span>, <span class="st">'Surgery Date'</span>, <span class="st">'Number of Surgeries'</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Number of Radiation Treatments (cycles)'</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Number of Chemotherapy Treatments (cycles)'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Discontinued Treatment prematurely?'</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Time from first surgery to start of radiation (weeks)'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Received Stupp protocol?'</span>, <span class="st">'Discontinued Stupps prematurely?'</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Time from onset of symptoms to diagnosis by biopsy (months)'</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Time from onset of symptoms to death (months)'</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Date of Death'</span>, </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Patient on Treatment at last visit?'</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Number of brain lobes involved at presentation'</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Brain Lobes involved at presentation'</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Other brain regions involved at presentation?'</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Any unique clinical findings'</span>, <span class="st">'Seizure at presentation?'</span>,</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Seizures later in course?'</span>, <span class="st">'DVT/ PE at presentation'</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>       <span class="st">'DVT/ PE during the course?'</span>, <span class="st">'Additional?'</span>]</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> characteristics[char_keep_cols]</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="90">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Patient ID</th>
+<th data-quarto-table-cell-role="th">Vital Status</th>
+<th data-quarto-table-cell-role="th">Institution Type at Presentation</th>
+<th data-quarto-table-cell-role="th">Overall Survival</th>
+<th data-quarto-table-cell-role="th">Extent of Resection</th>
+<th data-quarto-table-cell-role="th">Surgery Date</th>
+<th data-quarto-table-cell-role="th">Number of Surgeries</th>
+<th data-quarto-table-cell-role="th">Number of Radiation Treatments (cycles)</th>
+<th data-quarto-table-cell-role="th">Number of Chemotherapy Treatments (cycles)</th>
+<th data-quarto-table-cell-role="th">Discontinued Treatment prematurely?</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">Patient on Treatment at last visit?</th>
+<th data-quarto-table-cell-role="th">Number of brain lobes involved at presentation</th>
+<th data-quarto-table-cell-role="th">Brain Lobes involved at presentation</th>
+<th data-quarto-table-cell-role="th">Other brain regions involved at presentation?</th>
+<th data-quarto-table-cell-role="th">Any unique clinical findings</th>
+<th data-quarto-table-cell-role="th">Seizure at presentation?</th>
+<th data-quarto-table-cell-role="th">Seizures later in course?</th>
+<th data-quarto-table-cell-role="th">DVT/ PE at presentation</th>
+<th data-quarto-table-cell-role="th">DVT/ PE during the course?</th>
+<th data-quarto-table-cell-role="th">Additional?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td></td>
+<td>alive, dead, lost to follow up</td>
+<td>(ER, Outpatient Clinic)</td>
+<td>Months from surgery to death</td>
+<td>Biopsy, Subtotal Resection, Gross Total Resect...</td>
+<td>(MM/DD/YYYY)</td>
+<td>1, 2, ?3</td>
+<td>0, 1, ?2</td>
+<td>0, 1, 2, ?3</td>
+<td>(Yes, No)</td>
+<td>...</td>
+<td></td>
+<td>0, 1, 2, 3, 4</td>
+<td>(Frontal, Parietal, Occipital, Temporal)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>patient_id</td>
+<td>vital_status</td>
+<td>institution_type</td>
+<td>overall_survival</td>
+<td>resection_extent</td>
+<td>surgery_date</td>
+<td>num_surgeries</td>
+<td>num_radiations</td>
+<td>num_chemo</td>
+<td>discontinued_treatment</td>
+<td>...</td>
+<td>on_treatment_last_visit</td>
+<td>num_lobes</td>
+<td>lobes_involved</td>
+<td>other_brain_regions</td>
+<td>unique_clinical_findings</td>
+<td>seizures_presentation</td>
+<td>seizures_later</td>
+<td>dvt_pe_presentation</td>
+<td>dvt_pe_during</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>lost to follow up</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>12/2/2024</td>
+<td>1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>no</td>
+<td>1</td>
+<td>occipital</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>dead</td>
+<td>ER</td>
+<td>2.25</td>
+<td>Biopsy</td>
+<td>10/29/2024</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>0</td>
+<td>NaN</td>
+<td>basal ganglia, corpus callosum, thalamus, gang...</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>3</td>
+<td>alive</td>
+<td>ER</td>
+<td>NaN</td>
+<td>gross total resection</td>
+<td>10/2/2024</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>1</td>
+<td>temporal</td>
+<td>corpus callosum, intra-axial</td>
+<td>NaN</td>
+<td>no</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">282</td>
+<td>292</td>
+<td>dead</td>
+<td>ER</td>
+<td>12.5</td>
+<td>resection NOS</td>
+<td>5/24/2021</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>2</td>
+<td>frontal, parietal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">283</td>
+<td>293</td>
+<td>dead</td>
+<td>ER</td>
+<td>0.25</td>
+<td>resection NOS</td>
+<td>1/24/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>pontomesenphalic junction</td>
+<td>hx of breast cancer</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">284</td>
+<td>294</td>
+<td>dead</td>
+<td>ER</td>
+<td>4.25</td>
+<td>biopsy</td>
+<td>1/19/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">285</td>
+<td>295</td>
+<td>dead</td>
+<td>ER</td>
+<td>1</td>
+<td>biopsy</td>
+<td>1/4/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>0</td>
+<td>NaN</td>
+<td>thalamus</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">286</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>287 rows × 26 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-11" class="cell" data-execution_count="91">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> char_subset_cols.iloc[<span class="dv">1</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols[<span class="dv">2</span>:]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>char_subset_cols.columns <span class="op">=</span> new_header</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>char_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="91">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">vital_status</th>
+<th data-quarto-table-cell-role="th">institution_type</th>
+<th data-quarto-table-cell-role="th">overall_survival</th>
+<th data-quarto-table-cell-role="th">resection_extent</th>
+<th data-quarto-table-cell-role="th">surgery_date</th>
+<th data-quarto-table-cell-role="th">num_surgeries</th>
+<th data-quarto-table-cell-role="th">num_radiations</th>
+<th data-quarto-table-cell-role="th">num_chemo</th>
+<th data-quarto-table-cell-role="th">discontinued_treatment</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">on_treatment_last_visit</th>
+<th data-quarto-table-cell-role="th">num_lobes</th>
+<th data-quarto-table-cell-role="th">lobes_involved</th>
+<th data-quarto-table-cell-role="th">other_brain_regions</th>
+<th data-quarto-table-cell-role="th">unique_clinical_findings</th>
+<th data-quarto-table-cell-role="th">seizures_presentation</th>
+<th data-quarto-table-cell-role="th">seizures_later</th>
+<th data-quarto-table-cell-role="th">dvt_pe_presentation</th>
+<th data-quarto-table-cell-role="th">dvt_pe_during</th>
+<th data-quarto-table-cell-role="th">NaN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>lost to follow up</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>12/2/2024</td>
+<td>1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>no</td>
+<td>1</td>
+<td>occipital</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>dead</td>
+<td>ER</td>
+<td>2.25</td>
+<td>Biopsy</td>
+<td>10/29/2024</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>0</td>
+<td>NaN</td>
+<td>basal ganglia, corpus callosum, thalamus, gang...</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>alive</td>
+<td>ER</td>
+<td>NaN</td>
+<td>gross total resection</td>
+<td>10/2/2024</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>1</td>
+<td>temporal</td>
+<td>corpus callosum, intra-axial</td>
+<td>NaN</td>
+<td>no</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>dead</td>
+<td>ER</td>
+<td>1</td>
+<td>Resection NOS</td>
+<td>9/6/2024</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>2</td>
+<td>frontal, occipital</td>
+<td>thalamus, midbrain, basal ganglia</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>dead</td>
+<td>outpatient clinic</td>
+<td>5</td>
+<td>Resection NOS</td>
+<td>8/22/2024</td>
+<td>1</td>
+<td>1</td>
+<td>&lt;1</td>
+<td>yes</td>
+<td>...</td>
+<td>no</td>
+<td>1</td>
+<td>frontal</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>yes</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">280</td>
+<td>292</td>
+<td>dead</td>
+<td>ER</td>
+<td>12.5</td>
+<td>resection NOS</td>
+<td>5/24/2021</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>no</td>
+<td>2</td>
+<td>frontal, parietal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">281</td>
+<td>293</td>
+<td>dead</td>
+<td>ER</td>
+<td>0.25</td>
+<td>resection NOS</td>
+<td>1/24/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>pontomesenphalic junction</td>
+<td>hx of breast cancer</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">282</td>
+<td>294</td>
+<td>dead</td>
+<td>ER</td>
+<td>4.25</td>
+<td>biopsy</td>
+<td>1/19/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">283</td>
+<td>295</td>
+<td>dead</td>
+<td>ER</td>
+<td>1</td>
+<td>biopsy</td>
+<td>1/4/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>No</td>
+<td>0</td>
+<td>NaN</td>
+<td>thalamus</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">284</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>285 rows × 26 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-12" class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>char_subset_cols.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>Index([              'patient_id',             'vital_status',
+               'institution_type',         'overall_survival',
+               'resection_extent',             'surgery_date',
+                  'num_surgeries',           'num_radiations',
+                      'num_chemo',   'discontinued_treatment',
+         'time_surgery_radiation',           'received_stupp',
+            'discontinued_stupps',  'time_symptoms_diagnosis',
+            'time_symptoms_death',            'date_of_death',
+        'on_treatment_last_visit',                'num_lobes',
+                 'lobes_involved',      'other_brain_regions',
+       'unique_clinical_findings',    'seizures_presentation',
+                 'seizures_later',      'dvt_pe_presentation',
+                  'dvt_pe_during',                        nan],
+      dtype='object', name=1)</code></pre>
+</div>
+</div>
+<div id="cell-13" class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols.drop(columns <span class="op">=</span> [np.nan])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">vital_status</th>
+<th data-quarto-table-cell-role="th">institution_type</th>
+<th data-quarto-table-cell-role="th">overall_survival</th>
+<th data-quarto-table-cell-role="th">resection_extent</th>
+<th data-quarto-table-cell-role="th">surgery_date</th>
+<th data-quarto-table-cell-role="th">num_surgeries</th>
+<th data-quarto-table-cell-role="th">num_radiations</th>
+<th data-quarto-table-cell-role="th">num_chemo</th>
+<th data-quarto-table-cell-role="th">discontinued_treatment</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">date_of_death</th>
+<th data-quarto-table-cell-role="th">on_treatment_last_visit</th>
+<th data-quarto-table-cell-role="th">num_lobes</th>
+<th data-quarto-table-cell-role="th">lobes_involved</th>
+<th data-quarto-table-cell-role="th">other_brain_regions</th>
+<th data-quarto-table-cell-role="th">unique_clinical_findings</th>
+<th data-quarto-table-cell-role="th">seizures_presentation</th>
+<th data-quarto-table-cell-role="th">seizures_later</th>
+<th data-quarto-table-cell-role="th">dvt_pe_presentation</th>
+<th data-quarto-table-cell-role="th">dvt_pe_during</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>lost to follow up</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>12/2/2024</td>
+<td>1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>no</td>
+<td>1</td>
+<td>occipital</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>dead</td>
+<td>ER</td>
+<td>2.25</td>
+<td>Biopsy</td>
+<td>10/29/2024</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>no</td>
+<td>...</td>
+<td>1/7/2025</td>
+<td>no</td>
+<td>0</td>
+<td>NaN</td>
+<td>basal ganglia, corpus callosum, thalamus, gang...</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>alive</td>
+<td>ER</td>
+<td>NaN</td>
+<td>gross total resection</td>
+<td>10/2/2024</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>NaN</td>
+<td>no</td>
+<td>1</td>
+<td>temporal</td>
+<td>corpus callosum, intra-axial</td>
+<td>NaN</td>
+<td>no</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>dead</td>
+<td>ER</td>
+<td>1</td>
+<td>Resection NOS</td>
+<td>9/6/2024</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>no</td>
+<td>...</td>
+<td>10/15/2024</td>
+<td>no</td>
+<td>2</td>
+<td>frontal, occipital</td>
+<td>thalamus, midbrain, basal ganglia</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>dead</td>
+<td>outpatient clinic</td>
+<td>5</td>
+<td>Resection NOS</td>
+<td>8/22/2024</td>
+<td>1</td>
+<td>1</td>
+<td>&lt;1</td>
+<td>yes</td>
+<td>...</td>
+<td>1/23/2025</td>
+<td>no</td>
+<td>1</td>
+<td>frontal</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">279</td>
+<td>291</td>
+<td>dead</td>
+<td>ER</td>
+<td>28</td>
+<td>resection NOS</td>
+<td>5/27/2021</td>
+<td>1</td>
+<td>1</td>
+<td>?3</td>
+<td>no</td>
+<td>...</td>
+<td>9/25/2023</td>
+<td>No</td>
+<td>2</td>
+<td>parietal, occipital</td>
+<td>intra-axial, corpus callosum</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">280</td>
+<td>292</td>
+<td>dead</td>
+<td>ER</td>
+<td>12.5</td>
+<td>resection NOS</td>
+<td>5/24/2021</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>no</td>
+<td>...</td>
+<td>6/8/2022</td>
+<td>no</td>
+<td>2</td>
+<td>frontal, parietal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">281</td>
+<td>293</td>
+<td>dead</td>
+<td>ER</td>
+<td>0.25</td>
+<td>resection NOS</td>
+<td>1/24/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>1/30/2021</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>pontomesenphalic junction</td>
+<td>hx of breast cancer</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">282</td>
+<td>294</td>
+<td>dead</td>
+<td>ER</td>
+<td>4.25</td>
+<td>biopsy</td>
+<td>1/19/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>5/28/2021</td>
+<td>No</td>
+<td>1</td>
+<td>frontal</td>
+<td>NaN</td>
+<td>Hx of prostate cancer</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">283</td>
+<td>295</td>
+<td>dead</td>
+<td>ER</td>
+<td>1</td>
+<td>biopsy</td>
+<td>1/4/2021</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>NaN</td>
+<td>...</td>
+<td>2/9/2021</td>
+<td>No</td>
+<td>0</td>
+<td>NaN</td>
+<td>thalamus</td>
+<td>NaN</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+
+<p>284 rows × 25 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="tumor-path" class="level4">
+<h4 class="anchored" data-anchor-id="tumor-path">Tumor Path</h4>
+<div id="cell-15" class="cell" data-execution_count="94">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tumor_path.columns <span class="op">=</span> tumor_path.columns.<span class="bu">str</span>.strip()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tumor_path.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="94">
+<pre><code>Index(['Medical Record Number', 'Patient ID', 'Patient Name',
+       'Microvascular Proliferation?', 'MP Early?', 'MP Focal?', 'Necrosis?',
+       '+7/-10 chromosomal alterations', 'EGFR amplification?',
+       'TERT promoter mutation?', 'pTERT variant?', '.MGMT methylation?',
+       'Ki67 Li?', 'ATRX?', 'Any other mutations?',
+       'Mitotic Activity Increase (per 10 high power fields)',
+       'Specific Mitotic Value', 'Caris?', 'DNA Methylation Profiling?',
+       'Methylation Profile Result', 'additional?', 'Unnamed: 21',
+       'Unnamed: 22', 'Unnamed: 23', 'Unnamed: 24', 'Unnamed: 25',
+       'Unnamed: 26', 'Unnamed: 27', 'Unnamed: 28', 'Unnamed: 29',
+       'Unnamed: 30', 'Unnamed: 31', 'Unnamed: 32', 'Unnamed: 33',
+       'Unnamed: 34', 'Unnamed: 35', 'Unnamed: 36', 'Unnamed: 37',
+       'Unnamed: 38', 'Unnamed: 39'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div id="cell-16" class="cell" data-execution_count="95">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tp_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Microvascular Proliferation?'</span>, <span class="st">'MP Early?'</span>, <span class="st">'MP Focal?'</span>, <span class="st">'Necrosis?'</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">'+7/-10 chromosomal alterations'</span>, <span class="st">'EGFR amplification?'</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>       <span class="st">'TERT promoter mutation?'</span>, <span class="st">'pTERT variant?'</span>, <span class="st">'.MGMT methylation?'</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Ki67 Li?'</span>, <span class="st">'ATRX?'</span>, <span class="st">'Any other mutations?'</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Mitotic Activity Increase (per 10 high power fields)'</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Specific Mitotic Value'</span>, <span class="st">'Caris?'</span>, <span class="st">'DNA Methylation Profiling?'</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Methylation Profile Result'</span>, <span class="st">'additional?'</span>]</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tumor_path[tp_keep_cols]</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>tp_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="95">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Patient ID</th>
+<th data-quarto-table-cell-role="th">Microvascular Proliferation?</th>
+<th data-quarto-table-cell-role="th">MP Early?</th>
+<th data-quarto-table-cell-role="th">MP Focal?</th>
+<th data-quarto-table-cell-role="th">Necrosis?</th>
+<th data-quarto-table-cell-role="th">+7/-10 chromosomal alterations</th>
+<th data-quarto-table-cell-role="th">EGFR amplification?</th>
+<th data-quarto-table-cell-role="th">TERT promoter mutation?</th>
+<th data-quarto-table-cell-role="th">pTERT variant?</th>
+<th data-quarto-table-cell-role="th">.MGMT methylation?</th>
+<th data-quarto-table-cell-role="th">Ki67 Li?</th>
+<th data-quarto-table-cell-role="th">ATRX?</th>
+<th data-quarto-table-cell-role="th">Any other mutations?</th>
+<th data-quarto-table-cell-role="th">Mitotic Activity Increase (per 10 high power fields)</th>
+<th data-quarto-table-cell-role="th">Specific Mitotic Value</th>
+<th data-quarto-table-cell-role="th">Caris?</th>
+<th data-quarto-table-cell-role="th">DNA Methylation Profiling?</th>
+<th data-quarto-table-cell-role="th">Methylation Profile Result</th>
+<th data-quarto-table-cell-role="th">additional?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td>NaN</td>
+<td></td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td></td>
+<td>&lt; 15%, &gt; 15%</td>
+<td>(RE, L, IC)</td>
+<td></td>
+<td>0, 1-5, 6to10, &gt;10</td>
+<td>NaN</td>
+<td>(Yes, No)</td>
+<td>(Yes, No)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>patient_id</td>
+<td>microvascular_proliferation</td>
+<td>mp_early</td>
+<td>mp_focal</td>
+<td>necrosis</td>
+<td>+7_-10_chromosomal</td>
+<td>EGFR_amplification</td>
+<td>TERT_promoter</td>
+<td>pTERT_variant</td>
+<td>MGMT_methylation</td>
+<td>Ki67_LI</td>
+<td>ATRX</td>
+<td>other_mutations</td>
+<td>mitotic_activity_increase</td>
+<td>specific_mitotic</td>
+<td>caris</td>
+<td>dna_profile</td>
+<td>methylation_result</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>ND</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>rare</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>3</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>1to5</td>
+<td>4to5</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">285</td>
+<td>295</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>15%</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>&gt;10</td>
+<td>19</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">286</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">287</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">288</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">289</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>290 rows × 19 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-17" class="cell" data-execution_count="96">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> tp_subset_cols.iloc[<span class="dv">1</span>]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[<span class="dv">2</span>:]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.columns <span class="op">=</span> new_header</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>tp_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="96">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">microvascular_proliferation</th>
+<th data-quarto-table-cell-role="th">mp_early</th>
+<th data-quarto-table-cell-role="th">mp_focal</th>
+<th data-quarto-table-cell-role="th">necrosis</th>
+<th data-quarto-table-cell-role="th">+7_-10_chromosomal</th>
+<th data-quarto-table-cell-role="th">EGFR_amplification</th>
+<th data-quarto-table-cell-role="th">TERT_promoter</th>
+<th data-quarto-table-cell-role="th">pTERT_variant</th>
+<th data-quarto-table-cell-role="th">MGMT_methylation</th>
+<th data-quarto-table-cell-role="th">Ki67_LI</th>
+<th data-quarto-table-cell-role="th">ATRX</th>
+<th data-quarto-table-cell-role="th">other_mutations</th>
+<th data-quarto-table-cell-role="th">mitotic_activity_increase</th>
+<th data-quarto-table-cell-role="th">specific_mitotic</th>
+<th data-quarto-table-cell-role="th">caris</th>
+<th data-quarto-table-cell-role="th">dna_profile</th>
+<th data-quarto-table-cell-role="th">methylation_result</th>
+<th data-quarto-table-cell-role="th">NaN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>ND</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>rare</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>1to5</td>
+<td>4to5</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>C124T</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>CDKN2A/B, EGFR, PIK3CA, SETD2</td>
+<td>1to5</td>
+<td>4to5</td>
+<td>Yes</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>NaN</td>
+<td>ND</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">282</td>
+<td>294</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">283</td>
+<td>295</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>15%</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>&gt;10</td>
+<td>19</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">284</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">285</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">286</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>287 rows × 19 columns</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="combining-all-together" class="level3">
+<h3 class="anchored" data-anchor-id="combining-all-together">Combining All Together</h3>
+<div id="cell-19" class="cell" data-execution_count="97">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> demo_subset_cols.merge(char_subset_cols, how <span class="op">=</span> <span class="st">"outer"</span>, on <span class="op">=</span> <span class="st">"patient_id"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(tp_subset_cols, how <span class="op">=</span> <span class="st">"outer"</span>, on <span class="op">=</span> <span class="st">"patient_id"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [np.nan])</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="97">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">gender</th>
+<th data-quarto-table-cell-role="th">race</th>
+<th data-quarto-table-cell-role="th">diagnosis_age</th>
+<th data-quarto-table-cell-role="th">exclude</th>
+<th data-quarto-table-cell-role="th">vital_status</th>
+<th data-quarto-table-cell-role="th">institution_type</th>
+<th data-quarto-table-cell-role="th">overall_survival</th>
+<th data-quarto-table-cell-role="th">resection_extent</th>
+<th data-quarto-table-cell-role="th">surgery_date</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">pTERT_variant</th>
+<th data-quarto-table-cell-role="th">MGMT_methylation</th>
+<th data-quarto-table-cell-role="th">Ki67_LI</th>
+<th data-quarto-table-cell-role="th">ATRX</th>
+<th data-quarto-table-cell-role="th">other_mutations</th>
+<th data-quarto-table-cell-role="th">mitotic_activity_increase</th>
+<th data-quarto-table-cell-role="th">specific_mitotic</th>
+<th data-quarto-table-cell-role="th">caris</th>
+<th data-quarto-table-cell-role="th">dna_profile</th>
+<th data-quarto-table-cell-role="th">methylation_result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Male</td>
+<td>other</td>
+<td>79</td>
+<td>NaN</td>
+<td>lost to follow up</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>12/2/2024</td>
+<td>...</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>ND</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>10</td>
+<td>Male</td>
+<td>black</td>
+<td>65</td>
+<td>NaN</td>
+<td>alive</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>4/23/2024</td>
+<td>...</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>TP53, PTEN</td>
+<td>easily identified</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>100</td>
+<td>Female</td>
+<td>white</td>
+<td>77</td>
+<td>NaN</td>
+<td>dead</td>
+<td>Outpatient clinic</td>
+<td>11</td>
+<td>Gross total resection</td>
+<td>12/4/2023</td>
+<td>...</td>
+<td>C146T</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>CDKN2A/B deletion, MTAP deletion, NTRK2 fusion...</td>
+<td>6to10</td>
+<td>9</td>
+<td>Yes</td>
+<td>No</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>101</td>
+<td>Female</td>
+<td>black</td>
+<td>59</td>
+<td>NaN</td>
+<td>dead</td>
+<td>Outpatient clinic</td>
+<td>4.75</td>
+<td>Biopsy</td>
+<td>11/30/2023</td>
+<td>...</td>
+<td>C146T</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>PTEN, EGFRvIII</td>
+<td>rare</td>
+<td>NaN</td>
+<td>Yes</td>
+<td>No</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>102</td>
+<td>Female</td>
+<td>black</td>
+<td>61</td>
+<td>NaN</td>
+<td>lost to follow up</td>
+<td>ER</td>
+<td>NaN</td>
+<td>Resection NOS</td>
+<td>7/29/2023, 11/15/2023, 4/28/2024</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>&gt; 15%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>&gt;10</td>
+<td>12</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 46 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-20" class="cell" data-execution_count="98">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.to_csv(<span class="st">"../../data/raw_data/combined_raw.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -22,17 +22,7 @@ df <- df %>% filter(exclude == 0)
 
 ### Treatment Summary
 
-- what % of patients had stupps
-- what % of patients had chemoradiation but no stupps
-- what % of patients only did RT
-- what % of patients only did chemo 
-- what % of patients got no treatment 
-
 ```{r}
-df$num_chemo <- as.numeric(df$num_chemo)
-df$num_radiations <- as.numeric(df$num_radiations)
-unique(df$num_chemo)
-
 stupps <- mean(df$received_stupp == "yes") * 100
 chemorad_ns <- df %>% filter(num_chemo != "0" & num_radiations != "0" & received_stupp == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
 only_rt <- df %>% filter(num_chemo == "0" & num_radiations != "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
@@ -61,6 +51,8 @@ ggsurvfit(km) +
     title = "Overall Survival of Patients Treated with Stupps by MGMT Status"
     )
 ```
+
+
 ```{r}
 df$stupps_mgmt <- interaction(df$received_stupp, df$MGMT_methylation)
 
@@ -112,6 +104,7 @@ library(broom)
 
 broom::tidy(kruskal.test(overall_survival ~ stupps_mgmt, data = df_stupps))
 ```
+
 ### Median Age Analysis
 
 ```{r}
@@ -165,7 +158,7 @@ ggsurvfit(km_median_age) +
     )
 ```
 
-### Is temozolomide making a difference? 
+### Is temozolomide associated with longer survival?
 
 ```{r}
 df$num_chemo <- factor(df$num_chemo, levels = c("0", "<1", "1", "<2", "2", "≥3"))
@@ -199,6 +192,38 @@ chemo_stats %>% arrange(`Number of Chemo Cycles`) %>% gt()
 broom::tidy(kruskal.test(overall_survival ~ num_chemo, data = df_chemo))
 ```
 
+### Is radiation associated with longer survival time?
+
+```{r}
+df$num_radiations <- factor(df$num_radiations, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ num_radiations, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Number of Radiation Cycles"
+    )
+```
+
+```{r}
+rad_freq <- data.frame(table(df$num_radiations))
+colnames(rad_freq) <- c("Number of Radiation Cycles", "Count")
+rad_freq$`Percentage of Patients` <- round(((rad_freq$Count)/(sum(rad_freq$Count))*100), 2)
+
+df_rad <- df %>% filter(!is.na(num_radiations)) %>% filter(!is.na(overall_survival))
+
+mean_survival_rad <- df_rad %>%
+  group_by(num_radiations) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_rad) <- c("Number of Radiation Cycles", "Mean Overall Survival")
+
+rad_stats <- merge(rad_freq, mean_survival_rad, by = "Number of Radiation Cycles", all = TRUE)
+rad_stats %>% arrange(`Number of Radiation Cycles`) %>% gt()
+
+broom::tidy(kruskal.test(overall_survival ~ num_radiations, data = df_rad))
+```
+
 ### Mitotic Activity vs Ki67 Correlation 
 
 KM Curve for the categorical parts of the mitotic activity increase. 
@@ -209,8 +234,8 @@ micat_df <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10",
 micat_df$mitotic_activity_increase <- factor(micat_df$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
 
 mai_count <- data.frame(table(micat_df$mitotic_activity_increase))
-colnames(mai_count) <- c("Mitotic Activity Increase Category", "Count")
-mai_count
+colnames(mai_count) <- c("Mitotic Index", "Count")
+mai_count %>% gt()
 ```
 
 Looking at Kaplan-Meier survival curves 
@@ -224,7 +249,7 @@ ggsurvfit(mai_km) +
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival by Mitotic Activity Increase Category"
+    title = "Overall Survival by Mitotic Index Category"
     )
 
 mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df_nz)
@@ -232,7 +257,7 @@ ggsurvfit(mai_km) +
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival by Mitotic Activity Increase Category (Excluding 0)"
+    title = "Overall Survival by Mitotic Index (Excluding 0)"
     )
 
 mai_km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_LI, data = micat_df_nz)
@@ -244,21 +269,46 @@ ggsurvfit(mai_km) +
     )
 ```
 
-Seeing if there is trend between mitotic activity and Ki67 proliferation index.
+Seeing if there is an association between mitotic activity and Ki67 proliferation index.
 
 ```{r}
 micat_df$Ki67_LI <- factor(micat_df$Ki67_LI, levels = c("<15%", "15%", ">15%"))
 
 broom::tidy(fisher.test(table(micat_df$mitotic_activity_increase, micat_df$Ki67_LI)))
 ```
+
 There is a slight association between mitotic activity and Ki67.
 
+##### Looking at specific values of mitotic activity & Ki67
+
 ```{r}
-# cox 
-coxph(Surv(overall_survival, status == 1) ~ Ki67_LI + mitotic_activity_increase, data = micat_df)
+df_sm <- df %>% filter(!is.na(specific_mitotic))
+
+unique(df_sm$specific_mitotic)
+df_sm$specific_mitotic <- factor(df_sm$specific_mitotic, levels = c(
+  "0", "1", "2", "2to3", "3", "3to4", "4", "4to5", "5", "5to6",
+  "6", "7", "7to8", "8", "8to9", "9", "10", "at least 10", "11",
+  "12", "13", "14", "15", "16", "19", "20", "21"
+))
+df$specific_mitotic <- factor(df$specific_mitotic, levels = c(
+  "0", "1", "2", "2to3", "3", "3to4", "4", "4to5", "5", "5to6",
+  "6", "7", "7to8", "8", "8to9", "9", "10", "at least 10", "11",
+  "12", "13", "14", "15", "16", "19", "20", "21"
+))
+
+df_sm_filt <- df %>%
+  filter(!grepl("to", specific_mitotic) & !grepl("at least ", specific_mitotic))
+
+
+sm_km <- survfit2(Surv(overall_survival, status == 1) ~ specific_mitotic, data = df_sm_filt)
+ggsurvfit(sm_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Specific Mitotic Index"
+    )
 ```
 
-Ki67 vs Mitotic Index- are they correlated? Is this prognostic (correlated with OS?) 
 
 ### Seizures and DVT? 
 
@@ -339,6 +389,7 @@ ggsurvfit(km) +
     title = "Survival of Patients With Seizures During Course"
     )
 ```
+
 #### DVT/PE at Presentation/During Course
 
 ```{r}
@@ -405,8 +456,6 @@ ggsurvfit(km) +
     title = "Survival of Patients With DVT/PE During Course"
     )
 ```
-
-
 
 
 Looking at DVT/PE History

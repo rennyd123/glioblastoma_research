@@ -269,6 +269,27 @@ ggsurvfit(mai_km) +
     )
 ```
 
+Looking specific at Ki67 and overall survival
+
+```{r}
+ki_freq <- data.frame(table(df$Ki67_LI))
+colnames(ki_freq) <- c("Ki67 Status", "Count")
+ki_freq$`Percentage of Patients` <- round(((ki_freq$Count)/(sum(ki_freq$Count))*100), 2)
+
+df_ki <- df %>% filter(!is.na(Ki67_LI)) %>% filter(!is.na(overall_survival))
+
+mean_survival_ki <- df_ki %>%
+  group_by(Ki67_LI) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_ki) <- c("Ki67 Status", "Mean Overall Survival")
+
+ki_stats <- merge(ki_freq, mean_survival_ki, by = "Ki67 Status", all = TRUE)
+ki_stats %>% arrange(`Ki67 Status`) %>% gt()
+
+broom::tidy(kruskal.test(overall_survival ~ Ki67_LI, data = df_ki))
+```
+
 Seeing if there is an association between mitotic activity and Ki67 proliferation index.
 
 ```{r}
@@ -308,6 +329,7 @@ ggsurvfit(sm_km) +
     title = "Overall Survival by Specific Mitotic Index"
     )
 ```
+
 
 
 ### Seizures and DVT? 

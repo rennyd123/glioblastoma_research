@@ -28,6 +28,26 @@ df <- df %>% filter(exclude == 0)
 - what % of patients only did chemo 
 - what % of patients got no treatment 
 
+```{r}
+df$num_chemo <- as.numeric(df$num_chemo)
+df$num_radiations <- as.numeric(df$num_radiations)
+unique(df$num_chemo)
+
+stupps <- mean(df$received_stupp == "yes") * 100
+chemorad_ns <- df %>% filter(num_chemo != "0" & num_radiations != "0" & received_stupp == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+only_rt <- df %>% filter(num_chemo == "0" & num_radiations != "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+only_chemo <- df %>% filter(num_chemo != "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+no_treat <- df %>% filter(num_chemo == "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+
+treatment_summary <- data.frame(
+  treatment = c("Stupp Protocol", "Chemo/Radiation No Stupp", "Only RT", "Only Chemo", "No Treatment"),
+  percent = c(stupps, chemorad_ns, only_rt, only_chemo, no_treat)
+)
+
+colnames(treatment_summary) <- c("Treatment Type", "Percent")
+treatment_summary %>% gt()
+```
+
 ### Is there a difference in overall survival for MGMT unmethylated and methylated status patients who received the Stupp protocol? 
 
 ```{r}

@@ -31,6 +31,9 @@ path_df <- path_df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to
 ```
 
 ```{r}
+# clustering try 1 
+
+
 #surv_obj <- Surv(path_df$overall_survival, path_df$status)
 #
 #selected_features <- c()
@@ -110,9 +113,10 @@ path_df <- path_df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to
 #  
 ```
 
-#### Second Clustering Method
+
 
 ```{r}
+#### Second Clustering Method
 #if (!require("survclust")) {
 #  install.packages("devtools")
 #  devtools::install_github("arorarshi/survClust")
@@ -132,3 +136,225 @@ path_df <- path_df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to
 #
 #
 ```
+
+
+### Hierarchical Clustering Using Distance Metrics 
+
+```{r, echo = FALSE, results = FALSE}
+library(tidyverse)      
+library(cluster)        
+library(factoextra)     
+library(survival)      
+library(survminer)
+library(ggsurvfit)
+library(klaR)           
+library(clustMixType)
+
+# read in data 
+data <- read.csv("../data/cleaned_data/cleaned_data.csv")
+
+# selecting caris cols
+path_cols <- c("microvascular_proliferation", "mp_early", "mp_focal", "necrosis", "chromosomal710", "EGFR_amplification", "TERT_promoter", "pTERT_variant", "MGMT_methylation", "Ki67_LI", "ATRX", "mitotic_activity_increase", "caris", "overall_survival", "status")
+path_data <- data %>% 
+  dplyr::select(all_of(path_cols))
+caris <- path_data %>% filter(caris == "yes")
+caris <- caris %>% dplyr::select(-caris)
+
+# factoring
+caris_factored <- caris %>%
+  mutate(across(-c(overall_survival, status), as.factor))
+
+caris_path <- caris_factored %>% 
+  dplyr::select(-c(overall_survival, status))
+
+# distance correlation
+gower_dist <- daisy(caris_path, metric = "gower") # gower good for cat
+gower_mat <- as.matrix(gower_dist)
+
+# getting optimal k value
+sil_width <- c(NA)
+for(i in 2:8){
+  pam_fit <- pam(gower_dist, diss = TRUE, k = i)
+  sil_width[i] <- pam_fit$silinfo$avg.width
+}
+#plot(1:8, sil_width, type = "b", xlab = "Number of clusters", ylab = "Silhouette Width")
+k <- which.max(sil_width)  # Get optimal k
+#cat("Optimal number of clusters:", k, "\n")
+
+# pam clustering 
+pam_result <- pam(gower_dist, diss = TRUE, k = k)
+caris_factored$cluster_pam <- as.factor(pam_result$clustering)
+
+# hierarchial clustering
+hc_result <- hclust(gower_dist, method = "ward.D2")
+caris_factored$cluster_hc <- as.factor(cutree(hc_result, k = 3))
+caris_factored$cluster_hc3 <- as.factor(cutree(hc_result, k = 3))
+caris_factored$cluster_hc4 <- as.factor(cutree(hc_result, k = 4))
+
+
+# K-M pam clustering 
+#km <- survfit2(Surv(overall_survival, status) ~ cluster_pam, data = caris_factored)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation") + 
+#  labs(title = "Overall Survival by Pam Clustering", x = "Time (Months)")
+#
+#km <- survfit2(Surv(overall_survival, status) ~ cluster_hc, data = caris_factored)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation") + 
+#  labs(title = "Overall Survival by Hierarchical Clustering", x = "Time (Months)")
+
+# exploring differences between hierarchical clustering results
+chi_square_results <- data.frame(
+  variable = character(),
+  chi_sq = numeric(),
+  p_value = numeric(),
+  cramer_v = numeric()  
+)
+
+for(var in names(caris_path)) {
+  cont_table <- table(caris_factored[[var]], caris_factored$cluster_hc)
+  
+  if(any(cont_table < 5) && length(unique(caris_factored[[var]])) > 2) {
+    next
+  }
+  test <- suppressWarnings(chisq.test(cont_table))
+  cramer_v <- sqrt(test$statistic / (sum(cont_table) * (min(dim(cont_table)) - 1)))
+  
+  chi_square_results <- rbind(chi_square_results, 
+                             data.frame(variable = var,
+                                       chi_sq = test$statistic,
+                                       p_value = test$p.value,
+                                       cramer_v = cramer_v))
+}
+
+
+chi_square_results <- chi_square_results %>%
+  arrange(p_value, desc(cramer_v))
+
+# Apply FDR correction for multiple testing
+chi_square_results$p_adjusted <- p.adjust(chi_square_results$p_value, method = "BH")
+
+chi_square_results
+
+# random forests
+
+library(randomForest)
+
+rf_data_hc <- caris_path
+rf_data_hc$cluster <- caris_factored$cluster_hc
+
+set.seed(123)
+rf_model_hc <- randomForest(cluster ~ ., data = rf_data_hc, 
+                          importance = TRUE, 
+                          ntree = 500)
+
+var_importance_hc <- importance(rf_model_hc)
+var_importance_df_hc <- data.frame(
+  variable = rownames(var_importance_hc),
+  importance = var_importance_hc[, "MeanDecreaseGini"]
+)
+var_importance_df_hc <- var_importance_df_hc[order(var_importance_df_hc$importance, decreasing = TRUE), ]
+
+# Plot variable importance for hierarchical clustering
+#ggplot(head(var_importance_df_hc, 15), aes(x = reorder(variable, importance), y = importance)) +
+#  geom_bar(stat = "identity", fill = "darkblue") +
+#  coord_flip() +
+#  labs(title = "Variable Importance for Hierarchical Cluster Prediction",
+#       x = "", y = "Importance (Mean Decrease in Gini)") +
+#  theme_minimal()
+
+### another exploration 
+
+library(vcd)  
+
+# create function to analyze the association between a categorical variable and clusters
+#analyze_categorical_by_cluster <- function(data, var_name, cluster_col = "cluster_hc") {
+#
+#  cont_table <- table(data[[var_name]], data[[cluster_col]])
+#  
+#  row_pct <- round(prop.table(cont_table, margin = 1) * 100, 1)
+#  
+#  col_pct <- round(prop.table(cont_table, margin = 2) * 100, 1)
+#  
+#  chi_test <- chisq.test(cont_table)
+#  expected <- chi_test$expected
+#  
+#  std_residuals <- chi_test$residuals
+#  
+#  cat("\n\n===", var_name, "===\n")
+#  cat("Frequency table:\n")
+#  print(cont_table)
+#  cat("\nColumn percentages (% of each cluster with this characteristic):\n")
+#  print(col_pct)
+#  
+#  cat("\nStandardized residuals (values > 2 or < -2 indicate significant associations):\n")
+#  print(round(std_residuals, 2))
+#  
+#  # results
+#  return(list(
+#    cont_table = cont_table,
+#    col_pct = col_pct,
+#    chi_test = chi_test,
+#    std_residuals = std_residuals
+#  ))
+#}
+#
+#top_vars <- c("mp_focal", "mp_early", "microvascular_proliferation", "mitotic_activity_increase", "necrosis", "Ki67_LI", "chromosomal710", "EGFR_amplification", "TERT_promoter", "pTERT_variant", "MGMT_methylation", "ATRX")
+
+# Analyze each top variable
+#results_list <- lapply(top_vars, function(var) {
+#  analyze_categorical_by_cluster(caris_factored, var)
+#})
+#names(results_list) <- top_vars
+
+#for(var in top_vars) {
+#  formula_str <- paste("~", var, "+ cluster_hc")
+#  formula_obj <- as.formula(formula_str)
+#  
+#  # mosaic plot
+#  mosaic(formula_obj, data = caris_factored,
+#         main = paste("Association:", var, "and Clusters"),
+#         shade = TRUE,  # Color by residuals
+#         legend = TRUE)
+#}
+
+```
+
+##### Comparing Number of Clusters
+
+```{r}
+library(gt)
+cluster3_table <- data.frame(
+  `Characteristics` = c("Ki67", "Necrosis", "Microvascular Proliferation", "Mitoses"),
+  `Cluster 1` = c("Ki67 <15%", "No Necrosis", "No Microvascular Proliferation", "Occasional Mitoses"), 
+  `Cluster 2` = c("Ki67 ≥15%", "Yes Necrosis", "Yes Microvascular Proliferation", "Mitoses Not Significant"), 
+  `Cluster 3` = c("Ki67 <15%", "No Necrosis", "No Microvascular Proliferation", "Difficult to Identify/Inconspicuous Mitoses")
+)
+cluster3_table %>% gt()
+
+km <- survfit2(Surv(overall_survival, status) ~ cluster_hc3, data = caris_factored)
+ggsurvfit(km) + 
+  add_pvalue("annotation") + 
+  labs(title = "Overall Survival by Hierarchical Clustering (3 Clusters)", x = "Time (Months)")
+```
+
+Cluster 3 has a significantly lower median overall survival time than Cluster 1 and 2. There is not a big difference in overall survival in Cluster 1 and 2, evident by their crossing curves. 
+
+```{r}
+
+cluster4_table <- data.frame(
+  `Characteristics` = c("Ki67", "Necrosis", "Microvascular Proliferation", "Mitoses", "TERT Promoter", "pTERT Promoter", "EGFR Amplification"),
+  `Cluster 1` = c("Not Sig", "Not Sig", "No Microvascular Proliferation", "Occasional Mitoses", "Not Sig", "Not Sig", "Not Sig"), 
+  `Cluster 2` = c("Not Sig", "Yes Necrosis", "Yes Microvascular Proliferation", "Mitoses Not Significant", "Yes TERT Promoter", "Yes C124T", "Yes EGFR"), 
+  `Cluster 3` = c("Ki67 >15%", "Not Sig", "Yes Microvascular Proliferation", ">10", "No TERT Promoter", "Not C124T", "Not Sig"), 
+  `Cluster 4` = c("Ki67 <15%", "No Necrosis", "No Microvascular Proliferation", "Difficult to Identify/Inconspicuous Mitoses", "Not Sig", "Not Sig", "Not Sig")
+)
+cluster4_table %>% gt()
+
+km <- survfit2(Surv(overall_survival, status) ~ cluster_hc4, data = caris_factored)
+ggsurvfit(km) + 
+  add_pvalue("annotation") + 
+  labs(title = "Overall Survival by Hierarchical Clustering (4 Clusters)", x = "Time (Months)")
+```
+
+Cluster 4 has a significantly lower median overall survival time than Cluster 1 and 2. Cluster 3 has a significantly longer overall survival time than Cluster 1 and 2 until 15 months, which is when this difference seems to become insignificant. There again is not a big difference in overall survival in Cluster 1 and 2, evident by their crossing curves. 

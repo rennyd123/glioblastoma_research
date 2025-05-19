@@ -16,6 +16,8 @@ website:
         text: Initial Analysis
       - href: main_questions.qmd
         text: Main Questions
+      - href: clustering.qmd
+        text: Clustering
 
 format:
   html:

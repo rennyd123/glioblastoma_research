@@ -17,7 +17,9 @@ library(ggsurvfit)
 df <- read_csv("../data/cleaned_data/cleaned_data.csv")
 cols_drop <- c("...1")
 df <- df %>% dplyr::select(-all_of(cols_drop))
-df <- df %>% filter(exclude == 0)
+
+unique(df$num_chemo)
+table(df$received_stupp)
 ```
 
 ### Treatment Summary
@@ -28,10 +30,11 @@ chemorad_ns <- df %>% filter(num_chemo != "0" & num_radiations != "0" & received
 only_rt <- df %>% filter(num_chemo == "0" & num_radiations != "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
 only_chemo <- df %>% filter(num_chemo != "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
 no_treat <- df %>% filter(num_chemo == "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+lost <- 100-sum(stupps, chemorad_ns, only_rt, only_chemo, no_treat)
 
 treatment_summary <- data.frame(
-  treatment = c("Stupp Protocol", "Chemo/Radiation No Stupp", "Only RT", "Only Chemo", "No Treatment"),
-  percent = c(stupps, chemorad_ns, only_rt, only_chemo, no_treat)
+  treatment = c("Stupp Protocol", "Chemo/Radiation No Stupp", "Only RT", "Only Chemo", "Best Supportive Care", "Lost to Follow Up", "Total"),
+  percent = c(stupps, chemorad_ns, only_rt, only_chemo, no_treat, lost, sum(stupps, chemorad_ns, only_rt, only_chemo, no_treat, lost))
 )
 
 colnames(treatment_summary) <- c("Treatment Type", "Percent")
@@ -43,13 +46,15 @@ treatment_summary %>% gt()
 ```{r}
 df_stupps <- df %>% filter(received_stupp == "yes")
 
-km <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation, data = df_stupps)
+km <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation + received_stupp, data = df)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival of Patients Treated with Stupps by MGMT Status"
+    title = "Overall Survival of Patients Treated by MGMT Status + Stupp"
     )
+
+
 ```
 
 
@@ -101,8 +106,9 @@ ggboxplot(df_stupps,
 ```{r}
 library(dplyr)
 library(broom)
+library(knitr)
 
-broom::tidy(kruskal.test(overall_survival ~ stupps_mgmt, data = df_stupps))
+(kruskal.test(overall_survival ~ stupps_mgmt, data = df_stupps))
 ```
 
 ### Median Age Analysis
@@ -185,6 +191,7 @@ mean_survival_chemo <- df_chemo %>%
   summarise(mean_survival = mean(overall_survival))
 
 colnames(mean_survival_chemo) <- c("Number of Chemo Cycles", "Mean Overall Survival")
+
 
 chemo_stats <- merge(chemo_freq, mean_survival_chemo, by = "Number of Chemo Cycles", all = TRUE)
 chemo_stats %>% arrange(`Number of Chemo Cycles`) %>% gt()
@@ -305,7 +312,6 @@ There is a slight association between mitotic activity and Ki67.
 ```{r}
 df_sm <- df %>% filter(!is.na(specific_mitotic))
 
-unique(df_sm$specific_mitotic)
 df_sm$specific_mitotic <- factor(df_sm$specific_mitotic, levels = c(
   "0", "1", "2", "2to3", "3", "3to4", "4", "4to5", "5", "5to6",
   "6", "7", "7to8", "8", "8to9", "9", "10", "at least 10", "11",
@@ -395,7 +401,7 @@ ggsurvfit(km) +
 ```{r}
 df_sei_dvt <- df %>% filter(seizures_presentation != "unclear" & seizures_later != "unclear") 
 
-km <- survfit2(Surv(overall_survival, status == 1) ~ seizure_interaction, data = df_sei_dvt)
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_presentation, data = df_sei_dvt)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -445,12 +451,22 @@ mean_survival_dvtpe <- separate(mean_survival_dvtpe, dvt_pe_interaction, into = 
 
 merged_dvt_pe <- merge(tbl23, mean_survival_dvtpe, by = c("DVT/PE at Presentation", "DVT/PE During Course"), how = "outer")
 
-colnames(merged_dvt_pe) <- c("Seizures at Presentation", "Seizures During Course", "Count", "Percentage of Patients", "Mean Survival")
+colnames(merged_dvt_pe) <- c("DVT/PE at Presentation", "DVT/PE During Course", "Count", "Percentage of Patients", "Mean Survival")
 
 merged_dvt_pe %>% gt()
 
-broom::tidy(kruskal.test(overall_survival ~ dvt_pe_interaction, data = df_dvtpe))
+# overall if diagnosed every overall survival
+never_diagnosed <- df %>% filter(dvt_pe_presentation == "no" & dvt_pe_during == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+diagnosed <- df %>% filter(dvt_pe_presentation == "yes" | dvt_pe_during == "yes") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+losttofollowup <- 100-never_diagnosed-diagnosed
 
+dvt_sum <- data.frame(
+  treatment = c("Never Diagnosed with DVT", "Diagnosed with DVT at Presentation or During Course", "Lost to Follow Up", "Total"),
+  percent = c(never_diagnosed, diagnosed, losttofollowup, sum(never_diagnosed, diagnosed, losttofollowup)))
+colnames(dvt_sum) <- c("Treatment Type", "Percent")
+dvt_sum %>% gt()
+
+# plotting
 km <- survfit2(Surv(overall_survival, status == 1) ~ dvt_pe_interaction, data = df_dvtpe)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
@@ -592,6 +608,7 @@ ggsurvfit(km_fit) +
     title = "Overall Survival of Patients by Time from Diagnosis to Start of Radiation"
     )
 ```
+
 ```{r}
 km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + ttr_group, data = df)
 ggsurvfit(km_fit) + 
@@ -611,4 +628,38 @@ ggsurvfit(km_fit) +
     )
   ) +
   theme_minimal()
+```
+
+
+
+```{r}
+mgmt_freq <- data.frame(table(df$MGMT_methylation))
+colnames(mgmt_freq) <- c("MGMT Status", "Count")
+mgmt_freq$`Percentage of Patients` <- round(((mgmt_freq$Count)/(sum(mgmt_freq$Count))*100), 2)
+
+df_mgmt <- df %>% filter(!is.na(MGMT_methylation)) %>% filter(!is.na(overall_survival))
+
+mean_survival_mgmt <- df_mgmt %>%
+  group_by(MGMT_methylation) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_mgmt) <- c("MGMT Status", "Mean Overall Survival")
+
+mgmt_stats <- merge(mgmt_freq, mean_survival_mgmt, by = "MGMT Status", all = TRUE)
+mgmt_stats %>% arrange(`MGMT Status`) %>% gt()
+
+stupp_freq <- data.frame(table(df$received_stupp))
+colnames(stupp_freq) <- c("Stupp Status", "Count")
+stupp_freq$`Percentage of Patients` <- round(((stupp_freq$Count)/(sum(stupp_freq$Count))*100), 2)
+
+df_stupp <- df %>% filter(!is.na(received_stupp)) %>% filter(!is.na(overall_survival))
+
+mean_survival_stupp <- df_stupp %>%
+  group_by(received_stupp) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_stupp) <- c("Stupp Status", "Mean Overall Survival")
+
+stupp_stats <- merge(stupp_freq, mean_survival_stupp, by = "Stupp Status", all = TRUE)
+stupp_stats %>% arrange(`Stupp Status`) %>% gt()
 ```

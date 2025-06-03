@@ -1,0 +1,214 @@
+---
+format:
+  html: 
+    warning: false 
+    echo: false 
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(gt)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggsurvfit)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv")
+cols_drop <- c("...1")
+df <- df %>% dplyr::select(-all_of(cols_drop))
+df <- df %>% arrange(patient_id)
+
+no_treat <- df %>% 
+  filter((num_chemo == "0" & num_radiations == "0") | 
+         (is.na(num_chemo) & is.na(num_radiations)))
+
+df <- df %>% mutate(treatment = case_when(
+  num_chemo == "0" & num_radiations == "0" ~ "No",
+  num_chemo == "NA" & num_radiations == "NA" ~ "No",
+  TRUE ~ "Yes"  
+))
+
+
+```
+
+### Overall Survival Exploration 
+
+```{r}
+# summary df
+os_summary <- df %>%
+  group_by(treatment) %>%
+  summarise(
+    min_time = min(overall_survival, na.rm = TRUE),
+    max_time = max(overall_survival, na.rm = TRUE),
+    mean_time = mean(overall_survival, na.rm = TRUE),
+    median_time = median(overall_survival, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+colnames(os_summary) <- c("Received Treatment?", "Minimum Time", "Maximum Time", "Mean Time", "Median Time")
+os_summary %>% gt()
+
+# km curve for overall
+km <- survfit2(Surv(time = no_treat$overall_survival, event = no_treat$status) ~ 1, data = no_treat)
+plot(km, xlab = "Time", ylab = "Survival Probability", main = "Overall Survival for Untreated Individuals", conf.int = FALSE)
+abline(v = km$time[km$surv <= 0.5][1], col = "red", lty = 2)
+```
+
+### Comparing Treatment to No Treatment 
+
+```{r}
+km <- survfit2(Surv(overall_survival, status) ~ treatment, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation") + 
+  labs(x = "Time (Months)", title = "Comparison of KM Curves by Whether Treatment was Received")
+```
+
+### Looking at Characteristics 
+
+#### Age
+
+```{r}
+# filter for no treatment 
+no_treat <- df %>% filter(treatment == "No")
+
+# summary table
+diag_age_df <- no_treat %>%
+  summarise(
+    min_time = min(diagnosis_age, na.rm = TRUE),
+    max_time = max(diagnosis_age, na.rm = TRUE),
+    mean_time = mean(diagnosis_age, na.rm = TRUE),
+    median_time = median(diagnosis_age, na.rm = TRUE),
+  )
+colnames(diag_age_df) <- c("Minimum Age", "Maximum Age", "Mean Age", "Median Age")
+diag_age_df %>% gt()
+
+# density plot of diagnosis age
+ggplot(no_treat, aes(x = diagnosis_age)) +
+  geom_density(fill = "skyblue") +
+  labs(title = "Density Plot of Diagnosis Age", x = "Time (Months)", y = "Density") +
+  theme_minimal()
+
+# median age
+median_age <- median(no_treat$diagnosis_age)
+no_treat$median_age_status <- cut(no_treat$diagnosis_age,
+                    breaks = c(0, 72, 100),  
+                    labels = c("Below Median", "Equal to or Above Median"),  
+                    right = FALSE)
+
+# km median age
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ median_age_status, data = no_treat)
+ggsurvfit(km_median_age) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups Above and Below Median Age"
+    )
+
+# quarter age group cuts
+no_treat$quarter_age_status <- cut(no_treat$diagnosis_age,
+                    breaks = c(0, 50, 63, 76, 100),  
+                    labels = c("36-49", "49-62", "62-75", "76-88"),  
+                    right = FALSE)
+
+# km quarter age
+km_quarter_age <- survfit2(Surv(overall_survival, status) ~ quarter_age_status, data = no_treat)
+ggsurvfit(km_quarter_age) + 
+  add_pvalue("annotation") + 
+  labs(x = "Time (Months)", title = "Overall Survival of Untreated Patients by Age Groups (Fourths)")
+
+
+```
+
+#### Gender
+
+```{r}
+km_gender <- survfit2(Surv(overall_survival, status) ~ gender, data = no_treat)
+ggsurvfit(km_gender) + 
+  add_pvalue("annotation") + 
+  labs(x = "Time (Months)", title = "Overall Survival of Untreated Patients by Gender")
+
+ggplot(no_treat, aes(x=gender, fill = gender)) + 
+  geom_bar(stat = "count") + 
+  labs(x = "Gender", y = "Count", title = "Distribution of Gender of Untreated Patients", fill = "Gender")
+
+df_gender <- df %>% filter(!is.na(gender))
+ggplot(df_gender, aes(x = gender, fill = treatment)) + 
+    geom_bar(position = "fill") + 
+  labs(x = "Gender", y = "Proportion", title = "Proportion of Patients Who Received Treatment by Gender", fill = "Treatment")
+
+```
+
+#### Time From Symptoms to Diagnosis
+
+```{r}
+tsd_df <- no_treat %>%
+  summarise(
+    min_time = min(time_symptoms_diagnosis, na.rm = TRUE),
+    max_time = max(time_symptoms_diagnosis, na.rm = TRUE),
+    mean_time = mean(time_symptoms_diagnosis, na.rm = TRUE),
+    median_time = median(time_symptoms_diagnosis, na.rm = TRUE),
+  )
+
+colnames(tsd_df) <- c("Min Time", "Max Time", "Mean Time", "Median Time")
+tsd_df %>% gt()
+
+ggplot(no_treat, aes(x = time_symptoms_diagnosis)) +
+  geom_density(fill = "skyblue") +
+  labs(title = "Density Plot of Time From Onset of Symptoms to Diagnosis", x = "Time (Months)", y = "Density") +
+  theme_minimal()
+
+no_treat <- no_treat %>% mutate(
+  tsd_group = case_when(
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.625 ~ "≤ 0.625 Months\nEqual to/Below Median",
+    time_symptoms_diagnosis > 0.625 ~ "> 0.625 Months\nAbove Median"
+  )
+)
+
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = no_treat)
+ggsurvfit(km_fit) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Time from Onset of Symptoms to Diagnosis (Untreated)"
+    )
+```
+
+#### Extent of Resection
+
+```{r}
+resection_df <- data.frame(table(no_treat$resection_extent))
+colnames(resection_df) <- c("Resection Extent", "Count")
+resection_df$`Percentage of Patients` <- round(((resection_df$Count)/(sum(resection_df$Count)))*100, 2)
+resection_df %>% gt()
+
+no_treat$resection_extent <- factor(no_treat$resection_extent, levels = c("Biopsy", "Resection NOS", "Subtotal Resection", "Gross Total Resection"))
+km_resection <- survfit2(Surv(overall_survival, status == 1) ~ resection_extent, data = no_treat)
+ggsurvfit(km_resection) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Untreated Patients by Resection Extent"
+    )
+```
+
+#### Performance Status
+
+
+
+#### Methylated vs Unmethylated 
+
+```{r}
+mgmt_df <- data.frame(table(no_treat$MGMT_methylation))
+colnames(mgmt_df) <- c("MGMT Methylation Status", "Count")
+mgmt_df$`Percentage of Patients` <- round(((mgmt_df$Count)/(sum(mgmt_df$Count)))*100, 2)
+mgmt_df %>% gt()
+
+km_mgmt <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation, data = no_treat)
+ggsurvfit(km_mgmt) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Untreated Patients by MGMT Methylation Status"
+    )
+```

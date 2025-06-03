@@ -125,10 +125,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Introduction</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../data_summary.html"> 
 <span class="menu-text">Data Summary</span></a>
   </li>  
@@ -145,8 +141,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Main Questions</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../clustering.html"> 
-<span class="menu-text">Clustering</span></a>
+    <a class="nav-link" href="../ki67_mitotic.html"> 
+<span class="menu-text">Ki67 &amp; Mitotic</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -191,16 +187,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="cell-0" class="cell" data-execution_count="83">
+<div id="cell-0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>demographics <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/demographics_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>characteristics <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/characteristics_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>tumor_path <span class="op">=</span> pd.read_csv(<span class="st">"../../data/raw_data/tumor_path_raw.csv"</span>, encoding<span class="op">=</span><span class="st">'latin1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-1" class="cell" data-execution_count="84">
+<div id="cell-1" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>demographics.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="84">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -363,10 +359,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="getting-into-proper-column-format">Getting Into Proper Column Format</h3>
 <section id="demographics" class="level4">
 <h4 class="anchored" data-anchor-id="demographics">Demographics</h4>
-<div id="cell-4" class="cell" data-execution_count="85">
+<div id="cell-4" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>demographics.columns <span class="op">=</span> demographics.columns.<span class="bu">str</span>.strip()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>demographics.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="85">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>Index(['Community Medical Record Number', 'Patient ID', 'Patient Name',
        'Patient Date of Birth', 'Age', 'Gender', 'Race', 'Date of Diagnosis',
        'Age at Diagnosis', 'Renee or Sofia', 'Checked?', 'Exclude Prelim', '',
@@ -375,11 +371,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       dtype='object')</code></pre>
 </div>
 </div>
-<div id="cell-5" class="cell" data-execution_count="86">
+<div id="cell-5" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>demo_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Gender'</span>, <span class="st">'Race'</span>, <span class="st">'Age at Diagnosis'</span>, <span class="st">"Exclude Prelim"</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>demo_subset_cols <span class="op">=</span> demographics[demo_keep_cols]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>demo_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="86">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -444,7 +440,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">281</td>
+<td data-quarto-table-cell-role="th">278</td>
 <td>291</td>
 <td>Female</td>
 <td>white</td>
@@ -452,7 +448,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">282</td>
+<td data-quarto-table-cell-role="th">279</td>
 <td>292</td>
 <td>Male</td>
 <td>black</td>
@@ -460,7 +456,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">283</td>
+<td data-quarto-table-cell-role="th">280</td>
 <td>293</td>
 <td>Female</td>
 <td>black</td>
@@ -468,7 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">284</td>
+<td data-quarto-table-cell-role="th">281</td>
 <td>294</td>
 <td>Male</td>
 <td>white</td>
@@ -476,7 +472,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">285</td>
+<td data-quarto-table-cell-role="th">282</td>
 <td>295</td>
 <td>Male</td>
 <td>white</td>
@@ -486,17 +482,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>286 rows × 5 columns</p>
+<p>283 rows × 5 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-6" class="cell" data-execution_count="87">
+<div id="cell-6" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> demo_subset_cols.iloc[<span class="dv">1</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>demo_subset_cols <span class="op">=</span> demo_subset_cols[<span class="dv">2</span>:]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.columns <span class="op">=</span> new_header</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>demo_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="87">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -561,7 +557,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">279</td>
+<td data-quarto-table-cell-role="th">276</td>
 <td>291</td>
 <td>Female</td>
 <td>white</td>
@@ -569,7 +565,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">280</td>
+<td data-quarto-table-cell-role="th">277</td>
 <td>292</td>
 <td>Male</td>
 <td>black</td>
@@ -577,7 +573,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">281</td>
+<td data-quarto-table-cell-role="th">278</td>
 <td>293</td>
 <td>Female</td>
 <td>black</td>
@@ -585,7 +581,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">282</td>
+<td data-quarto-table-cell-role="th">279</td>
 <td>294</td>
 <td>Male</td>
 <td>white</td>
@@ -593,7 +589,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">283</td>
+<td data-quarto-table-cell-role="th">280</td>
 <td>295</td>
 <td>Male</td>
 <td>white</td>
@@ -603,23 +599,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>284 rows × 5 columns</p>
+<p>281 rows × 5 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-7" class="cell" data-execution_count="88">
+<div id="cell-7" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>demo_subset_cols.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="88">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>Index(['patient_id', 'gender ', 'race', 'diagnosis_age', 'exclude'], dtype='object', name=1)</code></pre>
 </div>
 </div>
 </section>
 <section id="clinical-characteristics" class="level4">
 <h4 class="anchored" data-anchor-id="clinical-characteristics">Clinical Characteristics</h4>
-<div id="cell-9" class="cell" data-execution_count="89">
+<div id="cell-9" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>characteristics.columns <span class="op">=</span> characteristics.columns.<span class="bu">str</span>.strip()</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>characteristics.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="89">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>Index(['Medical Record Number', 'Patient ID', 'Patient Name', 'Vital Status',
        'Institution Type at Presentation', 'Overall Survival',
        'Extent of Resection', 'Surgery Date', 'Number of Surgeries',
@@ -647,7 +643,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       dtype='object')</code></pre>
 </div>
 </div>
-<div id="cell-10" class="cell" data-execution_count="90">
+<div id="cell-10" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>char_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Vital Status'</span>, <span class="st">'Institution Type at Presentation'</span>, <span class="st">'Overall Survival'</span>,</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Extent of Resection'</span>, <span class="st">'Surgery Date'</span>, <span class="st">'Number of Surgeries'</span>,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Number of Radiation Treatments (cycles)'</span>,</span>
@@ -667,7 +663,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>       <span class="st">'DVT/ PE during the course?'</span>, <span class="st">'Additional?'</span>]</span>
 <span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> characteristics[char_keep_cols]</span>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="90">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -844,7 +840,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">282</td>
+<td data-quarto-table-cell-role="th">279</td>
 <td>292</td>
 <td>dead</td>
 <td>ER</td>
@@ -868,7 +864,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">283</td>
+<td data-quarto-table-cell-role="th">280</td>
 <td>293</td>
 <td>dead</td>
 <td>ER</td>
@@ -892,7 +888,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">284</td>
+<td data-quarto-table-cell-role="th">281</td>
 <td>294</td>
 <td>dead</td>
 <td>ER</td>
@@ -916,7 +912,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">285</td>
+<td data-quarto-table-cell-role="th">282</td>
 <td>295</td>
 <td>dead</td>
 <td>ER</td>
@@ -940,7 +936,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">286</td>
+<td data-quarto-table-cell-role="th">283</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -966,17 +962,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>287 rows × 26 columns</p>
+<p>284 rows × 26 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-11" class="cell" data-execution_count="91">
+<div id="cell-11" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> char_subset_cols.iloc[<span class="dv">1</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols[<span class="dv">2</span>:]</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>char_subset_cols.columns <span class="op">=</span> new_header</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>char_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="91">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1153,7 +1149,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">280</td>
+<td data-quarto-table-cell-role="th">277</td>
 <td>292</td>
 <td>dead</td>
 <td>ER</td>
@@ -1177,7 +1173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">281</td>
+<td data-quarto-table-cell-role="th">278</td>
 <td>293</td>
 <td>dead</td>
 <td>ER</td>
@@ -1201,7 +1197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">282</td>
+<td data-quarto-table-cell-role="th">279</td>
 <td>294</td>
 <td>dead</td>
 <td>ER</td>
@@ -1225,7 +1221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">283</td>
+<td data-quarto-table-cell-role="th">280</td>
 <td>295</td>
 <td>dead</td>
 <td>ER</td>
@@ -1249,7 +1245,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">284</td>
+<td data-quarto-table-cell-role="th">281</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -1275,13 +1271,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>285 rows × 26 columns</p>
+<p>282 rows × 26 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-12" class="cell" data-execution_count="92">
+<div id="cell-12" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>char_subset_cols.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="92">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Index([              'patient_id',             'vital_status',
                'institution_type',         'overall_survival',
                'resection_extent',             'surgery_date',
@@ -1298,12 +1294,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       dtype='object', name=1)</code></pre>
 </div>
 </div>
-<div id="cell-13" class="cell" data-execution_count="93">
+<div id="cell-13" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols.drop(columns <span class="op">=</span> [np.nan])</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>char_subset_cols <span class="op">=</span> char_subset_cols[:<span class="op">-</span><span class="dv">1</span>]</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>char_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="93">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
@@ -1480,7 +1476,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">279</td>
+<td data-quarto-table-cell-role="th">276</td>
 <td>291</td>
 <td>dead</td>
 <td>ER</td>
@@ -1504,7 +1500,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>yes</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">280</td>
+<td data-quarto-table-cell-role="th">277</td>
 <td>292</td>
 <td>dead</td>
 <td>ER</td>
@@ -1528,7 +1524,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>no</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">281</td>
+<td data-quarto-table-cell-role="th">278</td>
 <td>293</td>
 <td>dead</td>
 <td>ER</td>
@@ -1552,7 +1548,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>no</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">282</td>
+<td data-quarto-table-cell-role="th">279</td>
 <td>294</td>
 <td>dead</td>
 <td>ER</td>
@@ -1576,7 +1572,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>no</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">283</td>
+<td data-quarto-table-cell-role="th">280</td>
 <td>295</td>
 <td>dead</td>
 <td>ER</td>
@@ -1602,44 +1598,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>284 rows × 25 columns</p>
+<p>281 rows × 25 columns</p>
 </div>
 </div>
 </div>
 </section>
 <section id="tumor-path" class="level4">
 <h4 class="anchored" data-anchor-id="tumor-path">Tumor Path</h4>
-<div id="cell-15" class="cell" data-execution_count="94">
+<div id="cell-15" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>tumor_path.columns <span class="op">=</span> tumor_path.columns.<span class="bu">str</span>.strip()</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tumor_path.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="94">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>Index(['Medical Record Number', 'Patient ID', 'Patient Name',
        'Microvascular Proliferation?', 'MP Early?', 'MP Focal?', 'Necrosis?',
        '+7/-10 chromosomal alterations', 'EGFR amplification?',
        'TERT promoter mutation?', 'pTERT variant?', '.MGMT methylation?',
-       'Ki67 Li?', 'ATRX?', 'Any other mutations?',
+       'Ki67 Li?', 'Ki67 Specific', 'ATRX?', 'Any other mutations?',
        'Mitotic Activity Increase (per 10 high power fields)',
        'Specific Mitotic Value', 'Caris?', 'DNA Methylation Profiling?',
-       'Methylation Profile Result', 'additional?', 'Unnamed: 21',
-       'Unnamed: 22', 'Unnamed: 23', 'Unnamed: 24', 'Unnamed: 25',
-       'Unnamed: 26', 'Unnamed: 27', 'Unnamed: 28', 'Unnamed: 29',
-       'Unnamed: 30', 'Unnamed: 31', 'Unnamed: 32', 'Unnamed: 33',
-       'Unnamed: 34', 'Unnamed: 35', 'Unnamed: 36', 'Unnamed: 37',
-       'Unnamed: 38', 'Unnamed: 39'],
+       'Methylation Profile Result', 'additional?', 'Unnamed: 22',
+       'Unnamed: 23', 'Unnamed: 24', 'Unnamed: 25', 'Unnamed: 26',
+       'Unnamed: 27', 'Unnamed: 28', 'Unnamed: 29', 'Unnamed: 30',
+       'Unnamed: 31', 'Unnamed: 32', 'Unnamed: 33', 'Unnamed: 34',
+       'Unnamed: 35', 'Unnamed: 36', 'Unnamed: 37', 'Unnamed: 38',
+       'Unnamed: 39', 'Unnamed: 40'],
       dtype='object')</code></pre>
 </div>
 </div>
-<div id="cell-16" class="cell" data-execution_count="95">
+<div id="cell-16" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tp_keep_cols <span class="op">=</span> [<span class="st">'Patient ID'</span>, <span class="st">'Microvascular Proliferation?'</span>, <span class="st">'MP Early?'</span>, <span class="st">'MP Focal?'</span>, <span class="st">'Necrosis?'</span>,</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>       <span class="st">'+7/-10 chromosomal alterations'</span>, <span class="st">'EGFR amplification?'</span>,</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>       <span class="st">'TERT promoter mutation?'</span>, <span class="st">'pTERT variant?'</span>, <span class="st">'.MGMT methylation?'</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Ki67 Li?'</span>, <span class="st">'ATRX?'</span>, <span class="st">'Any other mutations?'</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Ki67 Li?'</span>, <span class="st">'Ki67 Specific'</span>, <span class="st">'ATRX?'</span>, <span class="st">'Any other mutations?'</span>,</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Mitotic Activity Increase (per 10 high power fields)'</span>,</span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Specific Mitotic Value'</span>, <span class="st">'Caris?'</span>, <span class="st">'DNA Methylation Profiling?'</span>,</span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>       <span class="st">'Methylation Profile Result'</span>, <span class="st">'additional?'</span>]</span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tumor_path[tp_keep_cols]</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>tp_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="95">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1658,6 +1654,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th">pTERT variant?</th>
 <th data-quarto-table-cell-role="th">.MGMT methylation?</th>
 <th data-quarto-table-cell-role="th">Ki67 Li?</th>
+<th data-quarto-table-cell-role="th">Ki67 Specific</th>
 <th data-quarto-table-cell-role="th">ATRX?</th>
 <th data-quarto-table-cell-role="th">Any other mutations?</th>
 <th data-quarto-table-cell-role="th">Mitotic Activity Increase (per 10 high power fields)</th>
@@ -1682,6 +1679,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td></td>
 <td>&lt; 15%, &gt; 15%</td>
+<td>NaN</td>
 <td>(RE, L, IC)</td>
 <td></td>
 <td>0, 1-5, 6to10, &gt;10</td>
@@ -1704,6 +1702,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>pTERT_variant</td>
 <td>MGMT_methylation</td>
 <td>Ki67_LI</td>
+<td>Ki67_specific</td>
 <td>ATRX</td>
 <td>other_mutations</td>
 <td>mitotic_activity_increase</td>
@@ -1718,7 +1717,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>1</td>
 <td>Y</td>
 <td>N</td>
-<td>N</td>
+<td>Y</td>
 <td>Y</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -1726,6 +1725,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>UM</td>
 <td>&gt; 15%</td>
+<td>25%</td>
 <td>ND</td>
 <td>NaN</td>
 <td>scattered</td>
@@ -1748,6 +1748,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>M</td>
 <td>&gt; 15%</td>
+<td>15-20%</td>
 <td>RE</td>
 <td>NaN</td>
 <td>rare</td>
@@ -1770,6 +1771,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>UM</td>
 <td>&gt; 15%</td>
+<td>25%</td>
 <td>RE</td>
 <td>NaN</td>
 <td>1to5</td>
@@ -1782,291 +1784,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
 <td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">285</td>
-<td>295</td>
-<td>N</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>Y</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>M</td>
-<td>15%</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>&gt;10</td>
-<td>19</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">286</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">287</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">288</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">289</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-<p>290 rows × 19 columns</p>
-</div>
-</div>
-</div>
-<div id="cell-17" class="cell" data-execution_count="96">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> tp_subset_cols.iloc[<span class="dv">1</span>]</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[<span class="dv">2</span>:]</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.columns <span class="op">=</span> new_header</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>tp_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="96">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">1</th>
-<th data-quarto-table-cell-role="th">patient_id</th>
-<th data-quarto-table-cell-role="th">microvascular_proliferation</th>
-<th data-quarto-table-cell-role="th">mp_early</th>
-<th data-quarto-table-cell-role="th">mp_focal</th>
-<th data-quarto-table-cell-role="th">necrosis</th>
-<th data-quarto-table-cell-role="th">+7_-10_chromosomal</th>
-<th data-quarto-table-cell-role="th">EGFR_amplification</th>
-<th data-quarto-table-cell-role="th">TERT_promoter</th>
-<th data-quarto-table-cell-role="th">pTERT_variant</th>
-<th data-quarto-table-cell-role="th">MGMT_methylation</th>
-<th data-quarto-table-cell-role="th">Ki67_LI</th>
-<th data-quarto-table-cell-role="th">ATRX</th>
-<th data-quarto-table-cell-role="th">other_mutations</th>
-<th data-quarto-table-cell-role="th">mitotic_activity_increase</th>
-<th data-quarto-table-cell-role="th">specific_mitotic</th>
-<th data-quarto-table-cell-role="th">caris</th>
-<th data-quarto-table-cell-role="th">dna_profile</th>
-<th data-quarto-table-cell-role="th">methylation_result</th>
-<th data-quarto-table-cell-role="th">NaN</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>Y</td>
-<td>N</td>
-<td>N</td>
-<td>Y</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>UM</td>
-<td>&gt; 15%</td>
-<td>ND</td>
-<td>NaN</td>
-<td>scattered</td>
-<td>NaN</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2</td>
-<td>Y</td>
-<td>N</td>
-<td>N</td>
-<td>N</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>M</td>
-<td>&gt; 15%</td>
-<td>RE</td>
-<td>NaN</td>
-<td>rare</td>
-<td>NaN</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>3</td>
-<td>Y</td>
-<td>N</td>
-<td>N</td>
-<td>Y</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>UM</td>
-<td>&gt; 15%</td>
-<td>RE</td>
-<td>NaN</td>
-<td>1to5</td>
-<td>4to5</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>4</td>
-<td>Y</td>
-<td>N</td>
-<td>N</td>
-<td>Y</td>
-<td>Y</td>
-<td>Y</td>
-<td>Y</td>
-<td>C124T</td>
-<td>M</td>
-<td>&gt; 15%</td>
-<td>RE</td>
-<td>CDKN2A/B, EGFR, PIK3CA, SETD2</td>
-<td>1to5</td>
-<td>4to5</td>
-<td>Yes</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>5</td>
-<td>N</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>Y</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>UM</td>
-<td>NaN</td>
-<td>ND</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -2089,28 +1806,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">282</td>
-<td>294</td>
-<td>N</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>Y</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>UM</td>
-<td>&gt; 15%</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>scattered</td>
-<td>NaN</td>
-<td>No</td>
-<td>No</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">283</td>
 <td>295</td>
 <td>N</td>
 <td>NaN</td>
@@ -2122,12 +1817,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>M</td>
 <td>15%</td>
+<td>15%</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>&gt;10</td>
 <td>19</td>
 <td>No</td>
 <td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">283</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -2152,9 +1871,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
+<td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">285</td>
+<td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -2196,11 +1917,310 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
+<td>NaN</td>
 </tr>
 </tbody>
 </table>
 
-<p>287 rows × 19 columns</p>
+<p>287 rows × 20 columns</p>
+</div>
+</div>
+</div>
+<div id="cell-17" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>new_header <span class="op">=</span> tp_subset_cols.iloc[<span class="dv">1</span>]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[<span class="dv">2</span>:]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.columns <span class="op">=</span> new_header</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>tp_subset_cols.reset_index(drop<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>tp_subset_cols <span class="op">=</span> tp_subset_cols[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>tp_subset_cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">1</th>
+<th data-quarto-table-cell-role="th">patient_id</th>
+<th data-quarto-table-cell-role="th">microvascular_proliferation</th>
+<th data-quarto-table-cell-role="th">mp_early</th>
+<th data-quarto-table-cell-role="th">mp_focal</th>
+<th data-quarto-table-cell-role="th">necrosis</th>
+<th data-quarto-table-cell-role="th">+7_-10_chromosomal</th>
+<th data-quarto-table-cell-role="th">EGFR_amplification</th>
+<th data-quarto-table-cell-role="th">TERT_promoter</th>
+<th data-quarto-table-cell-role="th">pTERT_variant</th>
+<th data-quarto-table-cell-role="th">MGMT_methylation</th>
+<th data-quarto-table-cell-role="th">Ki67_LI</th>
+<th data-quarto-table-cell-role="th">Ki67_specific</th>
+<th data-quarto-table-cell-role="th">ATRX</th>
+<th data-quarto-table-cell-role="th">other_mutations</th>
+<th data-quarto-table-cell-role="th">mitotic_activity_increase</th>
+<th data-quarto-table-cell-role="th">specific_mitotic</th>
+<th data-quarto-table-cell-role="th">caris</th>
+<th data-quarto-table-cell-role="th">dna_profile</th>
+<th data-quarto-table-cell-role="th">methylation_result</th>
+<th data-quarto-table-cell-role="th">NaN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>Y</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>25%</td>
+<td>ND</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>15-20%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>rare</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>3</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>25%</td>
+<td>RE</td>
+<td>NaN</td>
+<td>1to5</td>
+<td>4to5</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>4</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>C124T</td>
+<td>M</td>
+<td>&gt; 15%</td>
+<td>20-25%</td>
+<td>RE</td>
+<td>CDKN2A/B, EGFR, PIK3CA, SETD2</td>
+<td>1to5</td>
+<td>4to5</td>
+<td>Yes</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>5</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>ND</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">279</td>
+<td>294</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>UM</td>
+<td>&gt; 15%</td>
+<td>20%</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>scattered</td>
+<td>NaN</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">280</td>
+<td>295</td>
+<td>N</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>Y</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>M</td>
+<td>15%</td>
+<td>15%</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>&gt;10</td>
+<td>19</td>
+<td>No</td>
+<td>No</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">281</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">282</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">283</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+<p>284 rows × 20 columns</p>
 </div>
 </div>
 </div>
@@ -2208,12 +2228,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="combining-all-together" class="level3">
 <h3 class="anchored" data-anchor-id="combining-all-together">Combining All Together</h3>
-<div id="cell-19" class="cell" data-execution_count="97">
+<div id="cell-19" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> demo_subset_cols.merge(char_subset_cols, how <span class="op">=</span> <span class="st">"outer"</span>, on <span class="op">=</span> <span class="st">"patient_id"</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(tp_subset_cols, how <span class="op">=</span> <span class="st">"outer"</span>, on <span class="op">=</span> <span class="st">"patient_id"</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [np.nan])</span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="97">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -2232,9 +2252,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th">resection_extent</th>
 <th data-quarto-table-cell-role="th">surgery_date</th>
 <th data-quarto-table-cell-role="th">...</th>
-<th data-quarto-table-cell-role="th">pTERT_variant</th>
 <th data-quarto-table-cell-role="th">MGMT_methylation</th>
 <th data-quarto-table-cell-role="th">Ki67_LI</th>
+<th data-quarto-table-cell-role="th">Ki67_specific</th>
 <th data-quarto-table-cell-role="th">ATRX</th>
 <th data-quarto-table-cell-role="th">other_mutations</th>
 <th data-quarto-table-cell-role="th">mitotic_activity_increase</th>
@@ -2258,9 +2278,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Resection NOS</td>
 <td>12/2/2024</td>
 <td>...</td>
-<td>NaN</td>
 <td>UM</td>
 <td>&gt; 15%</td>
+<td>25%</td>
 <td>ND</td>
 <td>NaN</td>
 <td>scattered</td>
@@ -2282,9 +2302,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Resection NOS</td>
 <td>4/23/2024</td>
 <td>...</td>
-<td>NaN</td>
 <td>UM</td>
 <td>&gt; 15%</td>
+<td>15-20%</td>
 <td>RE</td>
 <td>TP53, PTEN</td>
 <td>easily identified</td>
@@ -2306,14 +2326,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Gross total resection</td>
 <td>12/4/2023</td>
 <td>...</td>
-<td>C146T</td>
-<td>M</td>
+<td>UM</td>
 <td>&gt; 15%</td>
+<td>50%</td>
 <td>RE</td>
-<td>CDKN2A/B deletion, MTAP deletion, NTRK2 fusion...</td>
-<td>6to10</td>
-<td>9</td>
-<td>Yes</td>
+<td>NaN</td>
+<td>frequent</td>
+<td>NaN</td>
+<td>No</td>
 <td>No</td>
 <td>NaN</td>
 </tr>
@@ -2330,14 +2350,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Biopsy</td>
 <td>11/30/2023</td>
 <td>...</td>
-<td>C146T</td>
 <td>UM</td>
 <td>&gt; 15%</td>
+<td>25%</td>
 <td>RE</td>
-<td>PTEN, EGFRvIII</td>
-<td>rare</td>
 <td>NaN</td>
-<td>Yes</td>
+<td>1to5</td>
+<td>2to3</td>
+<td>No</td>
 <td>No</td>
 <td>NaN</td>
 </tr>
@@ -2354,13 +2374,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Resection NOS</td>
 <td>7/29/2023, 11/15/2023, 4/28/2024</td>
 <td>...</td>
+<td>UM</td>
 <td>NaN</td>
 <td>NaN</td>
-<td>&gt; 15%</td>
 <td>RE</td>
 <td>NaN</td>
-<td>&gt;10</td>
-<td>12</td>
+<td>NaN</td>
+<td>NaN</td>
 <td>No</td>
 <td>No</td>
 <td>NaN</td>
@@ -2368,11 +2388,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-<p>5 rows × 46 columns</p>
+<p>5 rows × 47 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-20" class="cell" data-execution_count="98">
+<div id="cell-20" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.to_csv(<span class="st">"../../data/raw_data/combined_raw.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 

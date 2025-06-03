@@ -18,50 +18,91 @@ df <- read_csv("../data/cleaned_data/cleaned_data.csv")
 cols_drop <- c("...1")
 df <- df %>% dplyr::select(-all_of(cols_drop))
 
-unique(df$num_chemo)
-table(df$received_stupp)
+df <- df %>% mutate(treatment = case_when(
+  num_chemo == "0" & num_radiations == "0" ~ "No",
+  num_chemo == "NA" & num_radiations == "NA" ~ "No",
+  TRUE ~ "Yes"  
+))
+
+df_yes <- df %>% filter(treatment == "Yes")
+df_no <- df %>% filter(treatment == "No")
 ```
 
 ### Treatment Summary
 
 ```{r}
-stupps <- mean(df$received_stupp == "yes") * 100
-chemorad_ns <- df %>% filter(num_chemo != "0" & num_radiations != "0" & received_stupp == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
-only_rt <- df %>% filter(num_chemo == "0" & num_radiations != "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
-only_chemo <- df %>% filter(num_chemo != "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
-no_treat <- df %>% filter(num_chemo == "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
-lost <- 100-sum(stupps, chemorad_ns, only_rt, only_chemo, no_treat)
+stupps <- df_yes %>% filter(received_stupp == "yes") %>% summarise(pct = n() / nrow(df_yes) * 100) %>% pull(pct)
+chemorad_ns <- df_yes %>% filter(num_chemo != "0" & num_radiations != "0" & received_stupp == "no") %>% summarise(pct = n() / nrow(df_yes) * 100) %>% pull(pct)
+only_rt <- df_yes %>% filter(num_chemo == "0" & num_radiations != "0") %>% summarise(pct = n() / nrow(df_yes) * 100) %>% pull(pct)
+only_chemo <- df_yes %>% filter(num_chemo != "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df_yes) * 100) %>% pull(pct)
+#no_treat <- df %>% filter(num_chemo == "0" & num_radiations == "0") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+lost <- 100 - sum(stupps, chemorad_ns, only_rt, only_chemo)
 
 treatment_summary <- data.frame(
-  treatment = c("Stupp Protocol", "Chemo/Radiation No Stupp", "Only RT", "Only Chemo", "Best Supportive Care", "Lost to Follow Up", "Total"),
-  percent = c(stupps, chemorad_ns, only_rt, only_chemo, no_treat, lost, sum(stupps, chemorad_ns, only_rt, only_chemo, no_treat, lost))
+  treatment = c("Stupp Protocol", "Chemo/Radiation No Stupp", "Only RT", "Only Chemo", "Lost to Follow Up", "Total"),
+  percent = c(stupps, chemorad_ns, only_rt, only_chemo, lost, sum(stupps, chemorad_ns, only_rt, only_chemo, lost))
 )
 
 colnames(treatment_summary) <- c("Treatment Type", "Percent")
 treatment_summary %>% gt()
 ```
 
+### Difference in Gender? 
+
+```{r}
+km <- survfit2(Surv(overall_survival, status == 1) ~ gender, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time (Months)",
+    title = "Overall Survival of All Patients Treatment by Gender"
+    )
+```
+### Resection Status? 
+
+```{r}
+df_yes$resection_extent <- factor(df_yes$resection_extent, levels = c("Biopsy", "Resection NOS", "Subtotal Resection", "Gross Total Resection"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ resection_extent, data = df_yes)
+
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Treated Patients by Resection Extent"
+    )
+```
+### MGMT Summary
+
+```{r}
+mean_survival_mgmt <- df_no %>%
+  group_by(MGMT_methylation) %>%
+  summarise(mean_survival = mean(overall_survival, na.rm = TRUE))
+colnames(mean_survival_mgmt) <- c("MGMT Status", "Mean Overall Survival")
+mean_survival_mgmt %>% gt()
+
+
+table(df_no$MGMT_methylation)
+```
+
 ### Is there a difference in overall survival for MGMT unmethylated and methylated status patients who received the Stupp protocol? 
 
 ```{r}
-df_stupps <- df %>% filter(received_stupp == "yes")
+df_stupps <- df_yes %>% filter(received_stupp == "yes")
 
-km <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation + received_stupp, data = df)
+km <- survfit2(Surv(overall_survival, status == 1) ~ MGMT_methylation + received_stupp, data = df_yes)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
     title = "Overall Survival of Patients Treated by MGMT Status + Stupp"
     )
-
-
 ```
 
 
 ```{r}
-df$stupps_mgmt <- interaction(df$received_stupp, df$MGMT_methylation)
+df_yes$stupps_mgmt <- interaction(df_yes$received_stupp, df_yes$MGMT_methylation)
 
-fit <- survfit(Surv(overall_survival, status == 1) ~ stupps_mgmt, data = df)
+fit <- survfit(Surv(overall_survival, status == 1) ~ stupps_mgmt, data = df_yes)
 medians <- surv_median(fit)
 
 medians_df <- data.frame(group = names(summary(fit)$table[, "median"]),
@@ -79,7 +120,7 @@ medians_df %>% gt()
 We see that Stupps + Methylated Status = longest median survival time. Kruskal-Wallis test to test for significance.
 
 ```{r}
-df_stupps <- df %>% filter(stupps_mgmt %in% c("no.M", "yes.M", "no.UM", "yes.UM"))
+df_stupps <- df_yes %>% filter(stupps_mgmt %in% c("no.M", "yes.M", "no.UM", "yes.UM"))
 
 ggboxplot(df_stupps, 
           x = "stupps_mgmt", 
@@ -109,36 +150,38 @@ library(broom)
 library(knitr)
 
 (kruskal.test(overall_survival ~ stupps_mgmt, data = df_stupps))
+
+
 ```
 
 ### Median Age Analysis
 
 ```{r}
-median_age <- median(df$diagnosis_age)
+median_age <- summary(df_yes$diagnosis_age)
 
-df$median_age_status <- cut(df$diagnosis_age,
-                    breaks = c(0, 66, 100),  
-                    labels = c("Below Median", "Equal to or Above Median"),  
+df_yes$median_age_status <- cut(df_yes$diagnosis_age,
+                    breaks = c(0, 65, 100),  
+                    labels = c("Below Median", "Above Median"),  
                     right = FALSE)
 
-km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ median_age_status, data = df)
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ median_age_status, data = df_yes)
 ggsurvfit(km_median_age) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival of Groups Above and Below Median Age"
+    title = "Overall Survival of Groups Above and Below Median Age of Treated Patients"
     )
 ```
 
 We see significance here, what about for dividing dataset into thirds?
 
 ```{r}
-df$age_thirds <- cut(df$diagnosis_age, 
+df_yes$age_thirds <- cut(df_yes$diagnosis_age, 
                      breaks = c(0, 52, 72, 100), 
                      labels = c("31-51", "52-71", "72-91"), 
                      right = FALSE)
 
-km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_thirds, data = df)
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_thirds, data = df_yes)
 ggsurvfit(km_median_age) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -150,25 +193,37 @@ ggsurvfit(km_median_age) +
 And fourths? 
 
 ```{r}
-df$age_fourths <- cut(df$diagnosis_age, 
+df_yes$age_fourths <- cut(df_yes$diagnosis_age, 
                      breaks = c(0, 46, 61, 77, 100), 
                      labels = c("31-45", "46-60", "61-76", "77-91"), 
                      right = FALSE)
 
-km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_fourths, data = df)
+df_yes$age_young <- cut(df_yes$diagnosis_age, 
+                     breaks = c(0, 46, 100), 
+                     labels = c("31-45", "46-91"), 
+                     right = FALSE)
+
+km_median_age <- survfit2(Surv(overall_survival, status == 1) ~ age_fourths, data = df_yes)
 ggsurvfit(km_median_age) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival of Age Groups (Fourths)"
+    title = "Overall Survival of Treated Patients by Age Groups (Fourths)"
+    )
+
+km_young <- survfit2(Surv(overall_survival, status == 1) ~ age_young, data = df_yes)
+ggsurvfit(km_young) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Treated Patients by Age Groups (Fourths)"
     )
 ```
 
 ### Is temozolomide associated with longer survival?
 
 ```{r}
-df$num_chemo <- factor(df$num_chemo, levels = c("0", "<1", "1", "<2", "2", "≥3"))
-km <- survfit2(Surv(overall_survival, status == 1) ~ num_chemo, data = df)
+km <- survfit2(Surv(overall_survival, status == 1) ~ num_chemo, data = df_yes)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -180,11 +235,11 @@ ggsurvfit(km) +
 Temozolomide makes a huge difference in overall survival. We can see that patients that received three or more cycles had the longest survival times. Below is a summary table of each chemo group. 
 
 ```{r}
-chemo_freq <- data.frame(table(df$num_chemo))
+chemo_freq <- data.frame(table(df_yes$num_chemo))
 colnames(chemo_freq) <- c("Number of Chemo Cycles", "Count")
 chemo_freq$`Percentage of Patients` <- round(((chemo_freq$Count)/(sum(chemo_freq$Count))*100), 2)
 
-df_chemo <- df %>% filter(!is.na(num_chemo)) %>% filter(!is.na(overall_survival))
+df_chemo <- df_yes %>% filter(!is.na(num_chemo)) %>% filter(!is.na(overall_survival))
 
 mean_survival_chemo <- df_chemo %>%
   group_by(num_chemo) %>%
@@ -202,8 +257,8 @@ broom::tidy(kruskal.test(overall_survival ~ num_chemo, data = df_chemo))
 ### Is radiation associated with longer survival time?
 
 ```{r}
-df$num_radiations <- factor(df$num_radiations, levels = c("0", "<1", "1", "<2", "2", "≥3"))
-km <- survfit2(Surv(overall_survival, status == 1) ~ num_radiations, data = df)
+df_yes$num_radiations <- factor(df_yes$num_radiations, levels = c("0", "<1", "1", "<2", "2", "≥3"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ num_radiations, data = df_yes)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -213,11 +268,11 @@ ggsurvfit(km) +
 ```
 
 ```{r}
-rad_freq <- data.frame(table(df$num_radiations))
+rad_freq <- data.frame(table(df_yes$num_radiations))
 colnames(rad_freq) <- c("Number of Radiation Cycles", "Count")
 rad_freq$`Percentage of Patients` <- round(((rad_freq$Count)/(sum(rad_freq$Count))*100), 2)
 
-df_rad <- df %>% filter(!is.na(num_radiations)) %>% filter(!is.na(overall_survival))
+df_rad <- df_yes %>% filter(!is.na(num_radiations)) %>% filter(!is.na(overall_survival))
 
 mean_survival_rad <- df_rad %>%
   group_by(num_radiations) %>%
@@ -237,7 +292,7 @@ KM Curve for the categorical parts of the mitotic activity increase.
 
 ```{r}
 # KM curve for mitotic activity 
-micat_df <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+micat_df <- df_yes %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
 micat_df$mitotic_activity_increase <- factor(micat_df$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
 
 mai_count <- data.frame(table(micat_df$mitotic_activity_increase))
@@ -248,7 +303,7 @@ mai_count %>% gt()
 Looking at Kaplan-Meier survival curves 
 
 ```{r}
-micat_df_nz <- df %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
+micat_df_nz <- df_yes %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
 micat_df_nz$mitotic_activity_increase <- factor(micat_df_nz$mitotic_activity_increase, levels = c("1to5", "6to10", ">10"))
 
 mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df)
@@ -279,11 +334,11 @@ ggsurvfit(mai_km) +
 Looking specific at Ki67 and overall survival
 
 ```{r}
-ki_freq <- data.frame(table(df$Ki67_LI))
+ki_freq <- data.frame(table(df_yes$Ki67_LI))
 colnames(ki_freq) <- c("Ki67 Status", "Count")
 ki_freq$`Percentage of Patients` <- round(((ki_freq$Count)/(sum(ki_freq$Count))*100), 2)
 
-df_ki <- df %>% filter(!is.na(Ki67_LI)) %>% filter(!is.na(overall_survival))
+df_ki <- df_yes %>% filter(!is.na(Ki67_LI)) %>% filter(!is.na(overall_survival))
 
 mean_survival_ki <- df_ki %>%
   group_by(Ki67_LI) %>%
@@ -293,24 +348,50 @@ colnames(mean_survival_ki) <- c("Ki67 Status", "Mean Overall Survival")
 
 ki_stats <- merge(ki_freq, mean_survival_ki, by = "Ki67 Status", all = TRUE)
 ki_stats %>% arrange(`Ki67 Status`) %>% gt()
-
-broom::tidy(kruskal.test(overall_survival ~ Ki67_LI, data = df_ki))
 ```
 
-Seeing if there is an association between mitotic activity and Ki67 proliferation index.
+High vs Low Ki67 + Overall Survival
 
 ```{r}
-micat_df$Ki67_LI <- factor(micat_df$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+#hl_ki <- df_yes %>% filter(Ki67_level == "high" | Ki67_level == "low")
+#km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level, data = hl_ki)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation", size = 5) + 
+#  labs(
+#    x = "Time",
+#    title = "Overall Survival by High (>50%) vs Low (≤10%) Ki67 Index"
+#    )
+```
+ 
+ 
+Ki67 and Age
+ 
+```{r}
+#km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level + age_thirds, data = df_yes)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation", size = 5) + 
+#  labs(
+#    x = "Time",
+#    title = "Overall Survival by Ki67 Level & Age"
+#    )
+``` 
 
-broom::tidy(fisher.test(table(micat_df$mitotic_activity_increase, micat_df$Ki67_LI)))
+Association Between Ki67 and Mitotic
+
+```{r}
+df_num_mitotic <- df_yes %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+ki67 <- df_num_mitotic$Ki67_LI
+mitotic <- df_num_mitotic$mitotic_activity_increase
+
+table_ki67_mitotic <- table(df_num_mitotic$Ki67_LI, df_num_mitotic$mitotic_activity_increase)
+fisher.test(table_ki67_mitotic)
 ```
 
-There is a slight association between mitotic activity and Ki67.
 
 ##### Looking at specific values of mitotic activity & Ki67
 
 ```{r}
-df_sm <- df %>% filter(!is.na(specific_mitotic))
+df_sm <- df_yes %>% filter(!is.na(specific_mitotic))
 
 df_sm$specific_mitotic <- factor(df_sm$specific_mitotic, levels = c(
   "0", "1", "2", "2to3", "3", "3to4", "4", "4to5", "5", "5to6",
@@ -323,7 +404,7 @@ df$specific_mitotic <- factor(df$specific_mitotic, levels = c(
   "12", "13", "14", "15", "16", "19", "20", "21"
 ))
 
-df_sm_filt <- df %>%
+df_sm_filt <- df_yes %>%
   filter(!grepl("to", specific_mitotic) & !grepl("at least ", specific_mitotic))
 
 
@@ -347,18 +428,66 @@ tbl0 <- data.frame(table(df$seizures_presentation))
 colnames(tbl0) <- c("Seizures at Presentation?", "Count")
 tbl0$`Percentage of Patients` <- round(((tbl0$Count)/(sum(tbl0$Count)))*100, 2)
 tbl0 %>% gt()
+
+df_seizure <- df %>% filter(seizures_presentation != "unclear")
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_presentation, data = df_seizure)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time (Months)",
+    title = "Overall Survival of All Patients by Seizure at Presentation"
+    )
 ```
 
 ```{r}
-tbl1 <- data.frame(table(df$seizures_later))
+tbl1 <- data.frame(table(df_yes$seizures_later))
 colnames(tbl1) <- c("Seizures During Course?", "Count")
 tbl1$`Percentage of Patients` <- round(((tbl1$Count)/(sum(tbl1$Count)))*100, 2)
 tbl1 %>% gt()
 ```
 
+Seizures at presentation for patients above and below 60
 
 ```{r}
-tbl01 <- data.frame(table(interaction(df$seizures_presentation, df$seizures_later)))
+df <- df %>% mutate(above_60 = case_when(
+  diagnosis_age > 60 ~ "Above 60", 
+  diagnosis_age <= 60 ~ "60 and Below"
+))
+
+df_yes<- df_yes %>% mutate(above_60 = case_when(
+  diagnosis_age > 60 ~ "Above 60", 
+  diagnosis_age <= 60 ~ "60 and Below"
+))
+
+df_no <- df_no %>% mutate(above_60 = case_when(
+  diagnosis_age > 60 ~ "Above 60", 
+  diagnosis_age <= 60 ~ "60 and Below"
+))
+
+df_no <- df_no %>% filter(seizures_presentation != "unclear")
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_presentation + above_60, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Seizure at Presentation and Age Group"
+    )
+
+
+df_seipres <- df_no %>% filter(above_60 == "60 and Below")
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_presentation, data = df_seipres)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Seizure at Presentation for Untreated Patients \nAge 60 and Younger"
+    )
+```
+
+
+```{r}
+tbl01 <- data.frame(table(interaction(df_yes$seizures_presentation, df_yes$seizures_later)))
 colnames(tbl01) <- c("Seizures at Presentation/Seizure During Course", "Count")
 tbl01$`Percentage of Patients` <- round(((tbl01$Count)/(sum(tbl01$Count)))*100, 2)
 tbl01 <- separate(tbl01, `Seizures at Presentation/Seizure During Course`, into = c("Seizures at Presentation", "Seizures During Course"), sep = "\\.")
@@ -366,9 +495,9 @@ tbl01 <- separate(tbl01, `Seizures at Presentation/Seizure During Course`, into 
 tbl01_clean <- tbl01 %>%
   filter(`Seizures at Presentation` != "unclear" & `Seizures During Course` != "unclear")
 
-df$seizure_interaction <- interaction(df$seizures_presentation, df$seizures_later)
+df_yes$seizure_interaction <- interaction(df_yes$seizures_presentation, df_yes$seizures_later)
 
-df_seizure <- df %>% filter(!is.na(overall_survival)) %>% filter(!is.na(seizure_interaction))
+df_seizure <- df_yes %>% filter(!is.na(overall_survival)) %>% filter(!is.na(seizure_interaction))
 df_seizure <- df_seizure %>% filter(!grepl("unclear", seizure_interaction))
 
 mean_survival_seizure <- df_seizure %>%
@@ -399,14 +528,20 @@ ggsurvfit(km) +
 
 
 ```{r}
-df_sei_dvt <- df %>% filter(seizures_presentation != "unclear" & seizures_later != "unclear") 
+df_sei_dvt <- df_yes %>% filter(seizures_presentation != "unclear" & seizures_later != "unclear") 
+df_sei <- df_no %>% mutate(seizure_any = case_when(
+  seizures_presentation == "yes" & seizures_later == "no" ~ "yes",
+  seizures_presentation == "yes" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "no" ~ "no"
+))
 
 km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_presentation, data = df_sei_dvt)
 ggsurvfit(km) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Survival of Patients With Seizures At Presentation"
+    title = "Overall Survival of reated Patients With Seizures At Presentation"
     )
 
 km <- survfit2(Surv(overall_survival, status == 1) ~ seizures_later, data = df_sei_dvt)
@@ -416,33 +551,65 @@ ggsurvfit(km) +
     x = "Time",
     title = "Survival of Patients With Seizures During Course"
     )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizure_any, data = df_sei)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Untreated Patients With Seizures At Any Point During Course"
+    )
+
+df <- df %>% mutate(seizure_any = case_when(
+  seizures_presentation == "yes" & seizures_later == "no" ~ "yes",
+  seizures_presentation == "yes" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "no" ~ "no"
+))
+
+df_yes <- df_yes %>% mutate(seizure_any = case_when(
+  seizures_presentation == "yes" & seizures_later == "no" ~ "yes",
+  seizures_presentation == "yes" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "yes" ~ "yes",
+  seizures_presentation == "no" & seizures_later == "no" ~ "no"
+))
+
+
+df_60below <- df_yes %>% filter(above_60 == "60 and Below")
+km <- survfit2(Surv(overall_survival, status == 1) ~ seizure_any, data = df_60below)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Treated Patients 60 and Under With Seizures At \nAny Point During Course"
+    )
 ```
 
 #### DVT/PE at Presentation/During Course
 
 ```{r}
-tbl2 <- data.frame(table(df$dvt_pe_presentation))
+tbl2 <- data.frame(table(df_yes$dvt_pe_presentation))
 colnames(tbl2) <- c("DVT/PE at Presentation?", "Count")
 tbl2$`Percentage of Patients` <- round(((tbl2$Count)/(sum(tbl2$Count)))*100, 2)
 tbl2 %>% gt()
 ```
 
 ```{r}
-tbl3 <- data.frame(table(df$dvt_pe_during))
+tbl3 <- data.frame(table(df_yes$dvt_pe_during))
 colnames(tbl3) <- c("DVT/PE During Course?", "Count")
 tbl3$`Percentage of Patients` <- round(((tbl3$Count)/(sum(tbl3$Count)))*100, 2)
 tbl3 %>% gt()
 ```
 
 ```{r}
-tbl23 <- data.frame(table(interaction(df$dvt_pe_presentation, df$dvt_pe_during)))
+tbl23 <- data.frame(table(interaction(df_yes$dvt_pe_presentation, df_yes$dvt_pe_during)))
 colnames(tbl23) <- c("DVT/PE at Presentation/DVT/PE During Course", "Count")
 tbl23$`Percentage of Patients` <- round(((tbl23$Count)/(sum(tbl23$Count)))*100, 2)
 tbl23 <- separate(tbl23, `DVT/PE at Presentation/DVT/PE During Course`, into = c("DVT/PE at Presentation", "DVT/PE During Course"), sep = "\\.")
 
-df$dvt_pe_interaction <- interaction(df$dvt_pe_presentation, df$dvt_pe_during)
+df_yes$dvt_pe_interaction <- interaction(df_yes$dvt_pe_presentation, df_yes$dvt_pe_during)
 
-df_dvtpe <- df %>% filter(!is.na(overall_survival)) %>% filter(!is.na(dvt_pe_interaction))
+df_dvtpe <- df_yes %>% filter(!is.na(overall_survival)) %>% filter(!is.na(dvt_pe_interaction))
 
 mean_survival_dvtpe <- df_dvtpe %>%
   group_by(dvt_pe_interaction) %>%
@@ -456,8 +623,8 @@ colnames(merged_dvt_pe) <- c("DVT/PE at Presentation", "DVT/PE During Course", "
 merged_dvt_pe %>% gt()
 
 # overall if diagnosed every overall survival
-never_diagnosed <- df %>% filter(dvt_pe_presentation == "no" & dvt_pe_during == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
-diagnosed <- df %>% filter(dvt_pe_presentation == "yes" | dvt_pe_during == "yes") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+never_diagnosed <- df_yes %>% filter(dvt_pe_presentation == "no" & dvt_pe_during == "no") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
+diagnosed <- df_yes %>% filter(dvt_pe_presentation == "yes" | dvt_pe_during == "yes") %>% summarise(pct = n() / nrow(df) * 100) %>% pull(pct)
 losttofollowup <- 100-never_diagnosed-diagnosed
 
 dvt_sum <- data.frame(
@@ -507,7 +674,7 @@ dvt_pe_hist %>% gt()
 ### Time Between Symptoms & Diagnosis 
 
 ```{r}
-tsd_df <- df %>%
+tsd_df <- df_yes %>%
   summarise(
     min_time = min(time_symptoms_diagnosis, na.rm = TRUE),
     max_time = max(time_symptoms_diagnosis, na.rm = TRUE),
@@ -518,37 +685,38 @@ tsd_df <- df %>%
 colnames(tsd_df) <- c("Min Time", "Max Time", "Mean Time", "Median Time")
 tsd_df %>% gt()
 
-ggplot(df, aes(x = time_symptoms_diagnosis)) +
+ggplot(df_yes, aes(x = time_symptoms_diagnosis)) +
   geom_density(fill = "skyblue") +
   labs(title = "Density Plot of Time From Onset of Symptoms to Diagnosis", x = "Time (Months)", y = "Density") +
   theme_minimal()
 ```
+
 ```{r}
-df <- df %>% mutate(
+df_yes <- df_yes %>% mutate(
   tsd_group = case_when(
-    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.5 ~ "≤ 0.5 Months",
-    time_symptoms_diagnosis > 0.5 ~ "> 0.5 Months"
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.5 ~ "≤ 0.5 Months\nEqual to/Below Median",
+    time_symptoms_diagnosis > 0.5 ~ "> 0.5 Months\nAbove Median"
   )
 )
 
-km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df)
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df_yes)
 ggsurvfit(km_fit) + 
   add_pvalue("annotation", size = 5) + 
   labs(
     x = "Time",
-    title = "Overall Survival by Time from Onset of Symptoms to Diagnosis (Median)"
+    title = "Overall Survival by Time from Onset of Symptoms to Diagnosis (Treated Patients)"
     )
 ```
 
 ```{r}
-df <- df %>% mutate(
+df_yes <- df_yes %>% mutate(
   tsd_group = case_when(
-    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 1.86 ~ "≤ 1.86",
-    time_symptoms_diagnosis > 1.86 ~ "> 1.86"
+    time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 2.05 ~ "≤ 2.05",
+    time_symptoms_diagnosis > 2.05 ~ "> 2.05"
   )
 )
 
-km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df)
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group, data = df_yes)
 ggsurvfit(km_fit) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -558,14 +726,14 @@ ggsurvfit(km_fit) +
 ```
 
 ```{r}
-df <- df %>% mutate(
+df_yes <- df_yes %>% mutate(
   tsd_group = case_when(
     time_symptoms_diagnosis >= 0 & time_symptoms_diagnosis <= 0.5 ~ "≤ 0.5 Months",
     time_symptoms_diagnosis > 0.5 ~ "> 0.5 Months"
   )
 )
 
-km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + received_stupp, data = df)
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + received_stupp, data = df_yes)
 ggsurvfit(km_fit) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -577,7 +745,7 @@ ggsurvfit(km_fit) +
 #### Time from Surgery to Start of Radiation
 
 ```{r}
-ttr_df <- df %>%
+ttr_df <- df_yes %>%
   summarise(
     min_time = min(time_surgery_radiation, na.rm = TRUE),
     max_time = max(time_surgery_radiation, na.rm = TRUE),
@@ -588,19 +756,19 @@ ttr_df <- df %>%
 colnames(ttr_df) <- c("Min Time", "Max Time", "Mean Time", "Median Time")
 ttr_df %>% gt()
 
-ggplot(df, aes(x = time_surgery_radiation)) +
+ggplot(df_yes, aes(x = time_surgery_radiation)) +
   geom_density(fill = "skyblue") +
   labs(title = "Density Plot of Time From Diagosis to Radiation", x = "Time (Weeks)", y = "Density") +
   theme_minimal()
 
-df <- df %>% mutate(
+df_yes <- df_yes %>% mutate(
   ttr_group = case_when(
     time_surgery_radiation >= 0 & time_surgery_radiation <= 6 ~ "0-1.5 Months",
     time_surgery_radiation > 6 ~ "> 1.5 Month"
   )
 )
 
-km_fit <- survfit2(Surv(overall_survival, status == 1) ~ ttr_group, data = df)
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ ttr_group, data = df_yes)
 ggsurvfit(km_fit) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -610,7 +778,7 @@ ggsurvfit(km_fit) +
 ```
 
 ```{r}
-km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + ttr_group, data = df)
+km_fit <- survfit2(Surv(overall_survival, status == 1) ~ tsd_group + ttr_group, data = df_yes)
 ggsurvfit(km_fit) + 
   add_pvalue("annotation", size = 5) + 
   labs(
@@ -633,11 +801,11 @@ ggsurvfit(km_fit) +
 
 
 ```{r}
-mgmt_freq <- data.frame(table(df$MGMT_methylation))
+mgmt_freq <- data.frame(table(df_yes$MGMT_methylation))
 colnames(mgmt_freq) <- c("MGMT Status", "Count")
 mgmt_freq$`Percentage of Patients` <- round(((mgmt_freq$Count)/(sum(mgmt_freq$Count))*100), 2)
 
-df_mgmt <- df %>% filter(!is.na(MGMT_methylation)) %>% filter(!is.na(overall_survival))
+df_mgmt <- df_yes %>% filter(!is.na(MGMT_methylation)) %>% filter(!is.na(overall_survival))
 
 mean_survival_mgmt <- df_mgmt %>%
   group_by(MGMT_methylation) %>%
@@ -648,11 +816,11 @@ colnames(mean_survival_mgmt) <- c("MGMT Status", "Mean Overall Survival")
 mgmt_stats <- merge(mgmt_freq, mean_survival_mgmt, by = "MGMT Status", all = TRUE)
 mgmt_stats %>% arrange(`MGMT Status`) %>% gt()
 
-stupp_freq <- data.frame(table(df$received_stupp))
+stupp_freq <- data.frame(table(df_yes$received_stupp))
 colnames(stupp_freq) <- c("Stupp Status", "Count")
 stupp_freq$`Percentage of Patients` <- round(((stupp_freq$Count)/(sum(stupp_freq$Count))*100), 2)
 
-df_stupp <- df %>% filter(!is.na(received_stupp)) %>% filter(!is.na(overall_survival))
+df_stupp <- df_yes %>% filter(!is.na(received_stupp)) %>% filter(!is.na(overall_survival))
 
 mean_survival_stupp <- df_stupp %>%
   group_by(received_stupp) %>%

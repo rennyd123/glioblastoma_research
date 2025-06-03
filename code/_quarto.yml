@@ -6,8 +6,8 @@ website:
   title: "GBM Analysis"
   navbar:
     left:
-      - href: index.qmd
-        text: Introduction
+#      - href: index.qmd
+#        text: Introduction
       - href: data_summary.qmd
         text: Data Summary
       - href: eda.qmd
@@ -16,8 +16,10 @@ website:
         text: Initial Analysis
       - href: main_questions.qmd
         text: Main Questions
-      - href: clustering.qmd
-        text: Clustering
+      - href: ki67_mitotic.qmd
+        text: Ki67 & Mitotic
+#      - href: clustering.qmd
+#        text: Clustering
 
 format:
   html:

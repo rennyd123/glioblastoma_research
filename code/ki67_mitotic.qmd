@@ -1,0 +1,392 @@
+---
+format:
+  html: 
+    warning: false 
+    echo: false 
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(gt)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggsurvfit)
+
+df <- read_csv("../data/cleaned_data/cleaned_data.csv")
+cols_drop <- c("...1")
+df <- df %>% dplyr::select(-all_of(cols_drop))
+
+df <- df %>% mutate(treatment = case_when(
+  num_chemo == "0" & num_radiations == "0" ~ "No",
+  num_chemo == "NA" & num_radiations == "NA" ~ "No",
+  TRUE ~ "Yes"  
+))
+
+df_yes <- df %>% filter(treatment == "Yes")
+df_no <- df %>% filter(treatment == "No")
+```
+
+### Mitotic Activity vs Ki67 Summary
+
+#### Table of Categorical Mitotic Index Values
+
+```{r}
+# KM curve for mitotic activity 
+micat_df <- df_yes %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+micat_df$mitotic_activity_increase <- factor(micat_df$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
+
+mai_count <- data.frame(table(micat_df$mitotic_activity_increase))
+colnames(mai_count) <- c("Mitotic Index", "Count")
+mai_count %>% gt()
+```
+
+
+#### Table of Specific Mitotic Activity Values
+
+```{r}
+df_copy <- df
+
+# dealing with mitotic 
+df_copy$specific_mitotic[df_copy$specific_mitotic == "2to3"] <- 2.5
+#df_copy$specific_mitotic[df_copy$specific_mitotic == "at least 10"] <- 10
+df_copy$specific_mitotic[df_copy$specific_mitotic == "7to8"] <- 7.5
+df_copy$specific_mitotic[df_copy$specific_mitotic == "4to5"] <- 4.5
+df_copy$specific_mitotic[df_copy$specific_mitotic == "3to4"] <- 3.5
+df_copy$specific_mitotic[df_copy$specific_mitotic == "5to6"] <- 5.5
+df_copy$specific_mitotic[df_copy$specific_mitotic == "8to9"] <- 8.5
+df_copy <- df_copy %>% filter(specific_mitotic != "at least 10")
+unique(df_copy$specific_mitotic)
+df_copy$specific_mitotic <- as.numeric(df_copy$specific_mitotic)
+
+
+# dealing with ki67
+unique(df_copy$Ki67_specific)
+
+df_copy$Ki67_specific <- gsub("%", "", df_copy$Ki67_specific)
+df_copy$Ki67_specific <- gsub(">", "", df_copy$Ki67_specific)
+df_copy <- df_copy %>% filter(Ki67_specific != "high")
+
+df_copy$Ki67_specific[df_copy$Ki67_specific == "8-10"] <-9
+df_copy$Ki67_specific[df_copy$Ki67_specific == "5-10"] <- 7.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "15-20"] <- 17.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "20-25"] <- 22.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "30-40"] <- 35
+df_copy$Ki67_specific[df_copy$Ki67_specific == "4-5"] <- 4.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "25-30"] <- 27.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "10-15"] <- 12.5
+df_copy$Ki67_specific[df_copy$Ki67_specific == "1-2"] <- 1.5
+df_copy$Ki67_specific <- as.numeric(df_copy$Ki67_specific)
+
+
+ggplot(df_copy, aes(x = specific_mitotic, y = Ki67_specific)) + 
+  geom_point() + 
+  labs(x = "Mitotic Index", y = "Ki67 Index", title = "Mitotic Index vs Ki67 Index") + 
+  geom_smooth(method=lm , color="red", se=TRUE)
+
+
+ggplot(df_copy, aes(x = specific_mitotic, y = Ki67_specific)) + 
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", colour="white") + 
+  labs(x = "Mitotic Index", y = "Ki67 Index", title = "Mitotic Index vs Ki67 Index") 
+  
+library(vcd)
+
+df_mitotic <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+df_mitotic$mitotic_activity_increase <- factor(df_mitotic$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
+df_mitotic$Ki67_LI <- factor(df_mitotic$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+
+tab <- table(df_mitotic$Ki67_LI, df_mitotic$mitotic_activity_increase)
+names(dimnames(tab)) <- c("Ki67 Index", "Mitotic Index")
+
+par(mar = c(5, 25, 4, 6), oma = c(0, 0, 0, 0))
+mosaic(tab,
+       shade = TRUE,
+       legend = TRUE,
+       main = "Mosaic Plot of Ki67 Index vs Mitotic Index",
+       labeling = labeling_border,  
+       labeling_args = list(
+         rot_labels = c(left = 0, top = 0)  
+       )
+)
+```
+
+
+```{r}
+df$Ki67_LI <- factor(df$Ki67_LI, levels = c("<15%", "15%", ">15%"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_LI, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Ki67% Index Group"
+    )
+
+df_mitotic <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+df_mitotic$mitotic_activity_increase <- factor(df_mitotic$mitotic_activity_increase, levels = c("0", "1to5", "6to10", ">10"))
+km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = df_mitotic)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Patients by Mitotic Activity Index Group"
+    )
+
+#df_mitotic <- df %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
+#df_mitotic$mitotic_activity_increase <- factor(df_mitotic$mitotic_activity_increase, levels = c("1to5", "6to10", ">10"))
+#km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = df_mitotic)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation", size = 5) + 
+#  labs(
+#    x = "Time",
+#    title = "Overall Survival of Patients by Mitotic Activity Index Group (Excluding 0)"
+#    )
+#
+```
+
+
+```{r}
+summary(df_copy$Ki67_specific)
+
+df_copy$Ki67_mean <- cut(df_copy$Ki67_specific,
+                    breaks = c(0, 23.433, 100),  
+                    labels = c("Below Mean", "Above Mean"),  
+                    right = FALSE)
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_mean, data = df_copy)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups Above and Below Mean Ki67"
+    )
+
+df_copy$Ki67_median <- cut(df_copy$Ki67_specific,
+                    breaks = c(0, 20, 100),  
+                    labels = c("Below Mean", "Equal to and Above Median"),  
+                    right = FALSE)
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_median, data = df_copy)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups Above and Below Median Ki67"
+    )
+
+
+df %>%
+  group_by(Ki67_level_5) %>%
+  summarise(
+    mean_survival = mean(overall_survival, na.rm = TRUE),
+    median_survival = median(overall_survival, na.rm = TRUE),
+    n = n()
+  )
+
+
+```
+
+```{r}
+df_ki1050 <- df_copy %>% filter(Ki67_level_10_50 != "middle")
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level_10_50, data = df_ki1050)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Low (≤10%) and High (≥50%) Ki67 Index"
+    )
+
+df_ki2540 <- df_copy %>% filter(Ki67_level_25_40 != "middle")
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level_25_40, data = df_ki2540)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Low (≤2.5%) and High (≥40%) Ki67 Index"
+    )
+
+df_ki580 <- df_copy %>% filter(Ki67_level_5_80 != "middle")
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level_5_80, data = df_ki580)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Low (≤5%) and High (≥80%) Ki67 Index"
+    )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level_5, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Above and Below 5% Ki67 Index"
+    )
+
+
+quantile(df_copy$Ki67_specific, probs = c(0.25, 0.75), na.rm = TRUE)
+```
+
+```{r}
+unique(df$specific_mitotic)
+
+df <- df %>%
+  mutate(
+    specific_mitotic_category1 = case_when(
+      specific_mitotic %in% c("0") ~ "0",
+      specific_mitotic %in% c("1", "2", "3", "2to3") ~ "1-3",
+      specific_mitotic %in% c("4", "5", "6", "4to5", "5to6", "3to4") ~ "4-6",
+      specific_mitotic %in% c("7", "8", "9", "7to8", "8to9") ~ "7-9",
+      specific_mitotic %in% c("10", "11", "12", "at least 10") ~ "10-12",
+      specific_mitotic %in% c("13", "14", "15") ~ "13-15",
+      specific_mitotic %in% c("16", "19", "20", "21") ~ "16+",
+      TRUE ~ NA_character_
+    ), 
+    specific_mitotic_category1 = factor(specific_mitotic_category1, levels = c("0", "1-3", "4-6", "7-9", "10-12", "13-15", "16+"))
+  )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ specific_mitotic_category1, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Mitotic Index Categories"
+    )
+
+df <- df %>%
+  mutate(
+    specific_mitotic_category2 = case_when(
+      specific_mitotic %in% c("0", "1", "2") ~ "0-2",
+      specific_mitotic %in% c("3", "2to3", "4", "3to4") ~ "2-4",
+      specific_mitotic %in% c("5", "6", "4to5", "5to6") ~ "4-6",
+      specific_mitotic %in% c("7", "8", "7to8") ~ "6-8",
+      specific_mitotic %in% c("9",  "8to9", "10") ~ "8-10",
+      specific_mitotic %in% c( "11", "12", "at least 10") ~ "10-12",
+      specific_mitotic %in% c("13", "14") ~ "12-14",
+      specific_mitotic %in% c("15", "16") ~ "14-16",
+      specific_mitotic %in% c("19", "20", "21") ~ "16+",
+      TRUE ~ NA_character_
+    ), 
+    specific_mitotic_category2 = factor(specific_mitotic_category2, levels = c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16+")
+    )
+  )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ specific_mitotic_category2, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Mitotic Index Categories"
+    )
+
+df <- df %>%
+  mutate(
+    mitotic_10 = case_when(
+      specific_mitotic %in% c("0", "1", "2", "3", "2to3", "4", "3to4", "5", "6", "4to5", "5to6", "7", "8", "7to8", "9",  "8to9", "10") ~ "≤10",
+      specific_mitotic %in% c( "11", "12", "at least 10", "13", "14", "15", "16", "19", "20", "21") ~ ">10",
+      TRUE ~ NA_character_)
+  )
+
+km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_10, data = df)
+ggsurvfit(km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival of Groups of Mitotic Index Categories"
+    )
+```
+
+Looking at Kaplan-Meier survival curves 
+
+```{r}
+micat_df_nz <- df_yes %>% filter(mitotic_activity_increase %in% c("1to5", "6to10", ">10"))
+micat_df_nz$mitotic_activity_increase <- factor(micat_df_nz$mitotic_activity_increase, levels = c("1to5", "6to10", ">10"))
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Mitotic Index Category"
+    )
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ mitotic_activity_increase, data = micat_df_nz)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Mitotic Index (Excluding 0)"
+    )
+
+mai_km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_LI, data = micat_df_nz)
+ggsurvfit(mai_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Ki67 Proliferation Index Category"
+    )
+```
+
+Looking specific at Ki67 and overall survival
+
+```{r}
+ki_freq <- data.frame(table(df_yes$Ki67_LI))
+colnames(ki_freq) <- c("Ki67 Status", "Count")
+ki_freq$`Percentage of Patients` <- round(((ki_freq$Count)/(sum(ki_freq$Count))*100), 2)
+
+df_ki <- df_yes %>% filter(!is.na(Ki67_LI)) %>% filter(!is.na(overall_survival))
+
+mean_survival_ki <- df_ki %>%
+  group_by(Ki67_LI) %>%
+  summarise(mean_survival = mean(overall_survival))
+
+colnames(mean_survival_ki) <- c("Ki67 Status", "Mean Overall Survival")
+
+ki_stats <- merge(ki_freq, mean_survival_ki, by = "Ki67 Status", all = TRUE)
+ki_stats %>% arrange(`Ki67 Status`) %>% gt()
+```
+
+High vs Low Ki67 + Overall Survival
+
+```{r}
+#hl_ki <- df %>% filter(Ki67_level == "high" | Ki67_level == "low")
+#km <- survfit2(Surv(overall_survival, status == 1) ~ Ki67_level, data = hl_ki)
+#ggsurvfit(km) + 
+#  add_pvalue("annotation", size = 5) + 
+#  labs(
+#    x = "Time",
+#    title = "Overall Survival by High (>50%) vs Low (≤10%) Ki67 Index"
+#    )
+```
+
+Association Between Ki67 and Mitotic
+
+```{r}
+df_num_mitotic <- df %>% filter(mitotic_activity_increase %in% c("0", "1to5", "6to10", ">10"))
+ki67 <- df_num_mitotic$Ki67_LI
+mitotic <- df_num_mitotic$mitotic_activity_increase
+
+table_ki67_mitotic <- table(df_num_mitotic$Ki67_LI, df_num_mitotic$mitotic_activity_increase)
+fisher.test(table_ki67_mitotic)
+```
+
+##### Looking at specific values of mitotic activity & Ki67
+
+Running into the n = 1 problem here.
+
+```{r}
+df_sm <- df %>% filter(!is.na(specific_mitotic))
+
+df_sm$specific_mitotic <- factor(df_sm$specific_mitotic, levels = c(
+  "0", "1", "2", "3", "4", "5", 
+  "6", "7",  "8",  "9", "10",  "11",
+  "12", "13", "14", "15", "16", "19", "20", "21"
+))
+
+sm_km <- survfit2(Surv(overall_survival, status == 1) ~ specific_mitotic, data = df_sm)
+ggsurvfit(sm_km) + 
+  add_pvalue("annotation", size = 5) + 
+  labs(
+    x = "Time",
+    title = "Overall Survival by Specific Mitotic Index"
+    )
+```

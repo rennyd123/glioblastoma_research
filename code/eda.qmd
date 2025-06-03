@@ -20,6 +20,9 @@ df <- read_csv("../data/cleaned_data/cleaned_data.csv", col_names = TRUE)
 cols_drop <- c("...1")
 df <- df %>% dplyr::select(-all_of(cols_drop))
 df <- df %>% filter(exclude == 0)
+
+df <- df %>% filter(!is.na(patient_id))
+df <- df %>% filter(!is.na(gender))
 ```
 
 #### Gender 
@@ -46,6 +49,12 @@ ggplot(df, aes(x = diagnosis_age)) +
 #### Race
 
 ```{r}
+
+race_sum <- table(df$race)
+race_df <- data.frame(Race = names(race_sum),
+                    Count = as.numeric(race_sum))
+race_df %>% gt()
+
 ggplot(df, aes(x = race, fill = race)) + 
   geom_bar(fill = "darkblue") + 
   labs(x = "Race", y = "Count", title = "Count by Race in the Data") + 

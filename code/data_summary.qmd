@@ -15,12 +15,18 @@ library(tidyverse)
 library(dplyr)
 
 df <- read_csv("../data/cleaned_data/cleaned_data.csv")
-cols_drop <- c("...1", "exclude", "lobes_involved")
+cols_drop <- c("...1", "exclude", "lobes_involved", "surgery_date")
 df <- df %>% dplyr::select(-all_of(cols_drop))
+
+df <- df %>% filter(!is.na(patient_id))
+df <- df %>% filter(!is.na(gender))
 ```
 
 ```{r}
 library(gtsummary)
+
+cat("Number of Patients:", nrow(df))
+
 gtsummary::tbl_summary(df)
 ```
 

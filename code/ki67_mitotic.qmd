@@ -24,6 +24,9 @@ df <- df %>% mutate(treatment = case_when(
   TRUE ~ "Yes"  
 ))
 
+df <- df %>% filter(!is.na(patient_id))
+df <- df %>% filter(!is.na(gender))
+
 df_yes <- df %>% filter(treatment == "Yes")
 df_no <- df %>% filter(treatment == "No")
 ```
